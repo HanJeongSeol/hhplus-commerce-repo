@@ -59,8 +59,8 @@ sequenceDiagram
     PointService-->>PointFacade: 충전 완료
     deactivate PointService
     PointFacade-->>PointController: 충전 완료 메시지
-    PointController-->>User: 충전 완료
     deactivate PointFacade
+    PointController-->>User: 충전 완료
     deactivate PointController
 
 ```
@@ -128,8 +128,8 @@ sequenceDiagram
     deactivate PointService
     
     PointFacade-->>PointController: 잔액 정보 전달
-    PointController-->>User: 잔액 정보 반환
     deactivate PointFacade
+    PointController-->>User: 잔액 정보 반환
     deactivate PointController
 ```
 ---
@@ -275,8 +275,8 @@ sequenceDiagram
     deactivate ProductService
     
     ProductFacade-->>ProductController: 상품 목록 전달
-    ProductController-->>User: 상품 목록 반환
     deactivate ProductFacade
+    ProductController-->>User: 상품 목록 반환
     deactivate ProductController
 ```
 ---
@@ -331,8 +331,8 @@ sequenceDiagram
     deactivate ProductService
     
     ProductFacade-->>ProductController: 상품 정보 전달
-    ProductController-->>User: 상품 상세 정보 반환
     deactivate ProductFacade
+    ProductController-->>User: 상품 상세 정보 반환
     deactivate ProductController
 ```
 ---
@@ -479,8 +479,8 @@ sequenceDiagram
     deactivate CouponService
     
     CouponFacade-->>CouponController: 발급 완료 메시지
-    CouponController-->>User: 쿠폰 발급 완료
     deactivate CouponFacade
+    CouponController-->>User: 쿠폰 발급 완료
     deactivate CouponController
 ```
 ---
@@ -619,8 +619,8 @@ sequenceDiagram
     deactivate CouponService
     
     CouponFacade-->>CouponController: 보유 쿠폰 목록 전달
-    CouponController-->>User: 보유 쿠폰 목록 반환
     deactivate CouponFacade
+    CouponController-->>User: 보유 쿠폰 목록 반환
     deactivate CouponController
 ```
 ---
@@ -704,8 +704,8 @@ sequenceDiagram
     deactivate OrderService
     
     OrderFacade-->>OrderController: 주문서 생성 완료
-    OrderController-->>User: 주문서 생성 완료 (결제 대기)
     deactivate OrderFacade
+    OrderController-->>User: 주문서 생성 완료 (결제 대기)
     deactivate OrderController
 ```
 ---
@@ -1023,8 +1023,8 @@ sequenceDiagram
     
     %% 트랜잭션 커밋
     BatchFacade->>DB: 트랜잭션 커밋
-    Note over BatchFacade: 트랜잭션 커밋 완료
     deactivate DB
+    Note over BatchFacade: 트랜잭션 커밋 완료
     
     BatchFacade-->>Scheduler: 배치 작업 완료
     deactivate BatchFacade
@@ -1072,7 +1072,7 @@ sequenceDiagram
     deactivate ProductService
     
     ProductFacade-->>ProductController: 인기 상품 목록 전달
-    ProductController-->>User: 인기 상품 목록 반환
     deactivate ProductFacade
+    ProductController-->>User: 인기 상품 목록 반환
     deactivate ProductController
 ```
