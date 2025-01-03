@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.interfaces.order;
+package kr.hhplus.be.server.interfaces.api.order;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

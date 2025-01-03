@@ -38,7 +38,12 @@ dependencies {
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
 
-    // Test
+	// lombok
+	compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
+
+
+	// Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
