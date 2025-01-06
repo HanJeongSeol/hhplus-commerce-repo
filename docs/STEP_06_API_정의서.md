@@ -176,11 +176,19 @@
 ### 4.1 주문서 생성
 - **Endpoint**: `POST /api/v1/orders`
 - **Request**:
-  ```json
+```json
   {
     "userId": 1,
-    "productId": 1,
-    "quantity": 2,
+    "orderDetails": [
+      {
+      "productId": 1,
+      "quantity": 2
+      },
+      {
+      "productId": 3,
+      "quantity": 1
+      }
+    ],
     "userCouponId": 1
   }
   ```
@@ -193,15 +201,21 @@
     "data": {
       "orderId": 1,
       "orderDate": "2025-01-01T10:30:00",
-      "totalAmount": 50000,
+      "totalAmount": 70000,
       "discountAmount": 5000,
-      "paymentAmount": 45000,
+      "paymentAmount": 65000,
       "orderDetails": [
         {
           "productName": "항해 기념품",
           "quantity": 2,
           "unitPrice": 25000,
           "totalPrice": 50000
+        },
+        {
+          "productName": "항해 녹차",
+          "quantity": 1,
+          "unitPrice": 20000,
+          "totalPrice": 20000
         }
       ],
       "appliedCoupon": {
