@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.interfaces.payment;
+package kr.hhplus.be.server.interfaces.api.payment;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
