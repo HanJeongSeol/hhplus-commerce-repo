@@ -1,50 +1,79 @@
 package kr.hhplus.be.server.interfaces.api.payment;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import kr.hhplus.be.server.interfaces.dto.payment.PaymentDiscountResponse;
+import kr.hhplus.be.server.interfaces.dto.payment.PaymentRequest;
+import kr.hhplus.be.server.interfaces.dto.payment.PaymentResponse;
+import kr.hhplus.be.server.support.constant.PaymentStatus;
+import kr.hhplus.be.server.support.constant.SuccessCode;
+import kr.hhplus.be.server.support.http.CustomApiResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 
+@Tag(name = "payments", description = "결제 API")
 @RestController
 @RequestMapping("/api/v1/payments")
 public class PaymentController {
 
-    /**
-     * 결제 처리 Mock API
-     * {
-     *     "data": {
-     *         "orderId": 1,
-     *         "paymentId": 1,
-     *         "remainingPoints": 105000,
-     *         "paymentDate": "2025-01-01T10:30:00",
-     *         "paymentAmount": 45000,
-     *         "paymentStatus": "결제완료"
-     *     },
-     *     "success": true,
-     *     "message": "결제가 완료되었습니다.",
-     *     "statusCode": 200
-     * }
-     */
+
+    @Operation(summary = "결제 처리", description = "주문에 대한 결제를 처리합니다.")
     @PostMapping
-    public Map<String, Object> processPayment(@RequestBody Map<String, Object> request) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<CustomApiResponse<PaymentResponse>> processPayment(
+            @RequestBody PaymentRequest request) {
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("paymentId", 1);
-        data.put("orderId", request.get("orderId"));
-        data.put("paymentAmount", 45000);
-        data.put("paymentStatus", "결제완료");
-        data.put("paymentDate", "2025-01-01T10:30:00");
-        data.put("remainingPoints", 105000);
+        // Mock 응답 데이터 생성 (실제 구현 시에는 Facade 호출)
+        PaymentDiscountResponse discountInfo = new PaymentDiscountResponse(
+                request.userCouponId(),
+                "신규 가입 할인 쿠폰",
+                5000L,
+                LocalDateTime.now()
+        );
 
-        response.put("success", true);
-        response.put("statusCode", 200);
-        response.put("message", "결제가 완료되었습니다.");
-        response.put("data", data);
+        PaymentResponse response = new PaymentResponse(
+                1L,
+                request.orderId(),
+                request.userId(),
+                PaymentStatus.PAID,
+                LocalDateTime.now(),
+                50000L,
+                discountInfo,
+                45000L,
+                105000L
+        );
 
-        return response;
+        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.PAYMENT_COMPLETED, response));
+    }
+
+    @Operation(summary = "결제 정보 조회", description = "결제 정보를 조회합니다.")
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<CustomApiResponse<PaymentResponse>> getPayment(
+            @Parameter(description = "결제 ID", required = true)
+            @PathVariable Long paymentId) {
+
+        // Mock 응답 데이터 생성 (실제 구현 시에는 Facade 호출)
+        PaymentDiscountResponse discountInfo = new PaymentDiscountResponse(
+                1L,
+                "신규 가입 할인 쿠폰",
+                5000L,
+                LocalDateTime.now()
+        );
+
+        PaymentResponse response = new PaymentResponse(
+                paymentId,
+                1L,
+                1L,
+                PaymentStatus.PAID,
+                LocalDateTime.now(),
+                50000L,
+                discountInfo,
+                45000L,
+                105000L
+        );
+
+        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.PAYMENT_FOUND, response));
     }
 }

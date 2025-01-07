@@ -1,115 +1,60 @@
 package kr.hhplus.be.server.interfaces.api.coupon;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import kr.hhplus.be.server.interfaces.dto.coupon.CouponIssueRequest;
+import kr.hhplus.be.server.interfaces.dto.coupon.CouponIssueResponse;
+import kr.hhplus.be.server.interfaces.dto.coupon.UserCouponResponse;
+import kr.hhplus.be.server.support.constant.CouponStatus;
+import kr.hhplus.be.server.support.constant.SuccessCode;
+import kr.hhplus.be.server.support.http.CustomApiResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
+@Tag(name="coupons", description = "쿠폰 API")
 @RestController
 @RequestMapping("/api/v1/coupons")
 public class CouponController {
 
-    /**
-     * 쿠폰 발급 Mock API
-     *{
-     *     "data": {
-     *         "expiredAt": "2025-01-02T23:59:59",
-     *         "couponName": "신규 가입 할인 쿠폰",
-     *         "discountAmount": 5000,
-     *         "userCouponId": 1,
-     *         "issueDate": "2025-01-01T10:30:00",
-     *         "status": "미사용"
-     *     },
-     *     "success": true,
-     *     "message": "쿠폰이 발급되었습니다.",
-     *     "statusCode": 200
-     * }
-     */
+    @Operation(summary = "쿠폰 발급", description = "사용자 쿠폰 발급")
     @PostMapping("/issue")
-    public Map<String, Object> issueCoupon(@RequestBody Map<String, Object> request) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<CustomApiResponse<CouponIssueResponse>> issueCoupon(@RequestBody CouponIssueRequest request) {
+        CouponIssueResponse response = new CouponIssueResponse(
+                1L,
+                "신규 가입 할인 쿠폰",
+                5000L,
+                CouponStatus.AVAILABLE,
+                LocalDateTime.parse("2025-01-01T10:30:00"),
+                LocalDateTime.parse("2025-01-02T23:59:59")
+        );
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("userCouponId", 1);
-        data.put("couponName", "신규 가입 할인 쿠폰");
-        data.put("discountAmount", 5000);
-        data.put("expiredAt", "2025-01-02T23:59:59");
-        data.put("status", "미사용");
-        data.put("issueDate", "2025-01-01T10:30:00");
-
-        response.put("success", true);
-        response.put("statusCode", 200);
-        response.put("message", "쿠폰이 발급되었습니다.");
-        response.put("data", data);
-
-        return response;
+        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.COUPON_ISSUED, response));
     }
-
-    /**
-     * 쿠폰 발급 내역 조회 Mock API
-     * {
-     *     "data": {
-     *         "coupons": [
-     *             {
-     *                 "expiredAt": "2025-01-02T23:59:59",
-     *                 "couponName": "신규 가입 할인 쿠폰",
-     *                 "discountAmount": 5000,
-     *                 "userCouponId": 1,
-     *                 "issueDate": "2025-01-01T10:30:00",
-     *                 "status": "미사용"
-     *             },
-     *             {
-     *                 "expiredAt": "2025-01-01T23:59:59",
-     *                 "couponName": "추가 할인 쿠폰",
-     *                 "discountAmount": 3000,
-     *                 "usedDate": "2024-12-25T14:20:00",
-     *                 "userCouponId": 2,
-     *                 "issueDate": "2024-12-24T00:00:00",
-     *                 "status": "사용완료"
-     *             }
-     *         ]
-     *     },
-     *     "success": true,
-     *     "message": "보유 쿠폰 조회가 완료되었습니다.",
-     *     "statusCode": 200
-     * }
-     */
+    @Operation(summary = "쿠폰 조회", description = "사용자 쿠폰 목록 조회")
     @GetMapping("/users/{userId}")
-    public Map<String, Object> getUserCoupons(@PathVariable String userId) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<CustomApiResponse<UserCouponResponse>> getUserCoupons(
+            @Parameter(description = "사용자 ID", example = "1", required = true)
+            @PathVariable String userId) {
+        List<UserCouponResponse.CouponItem> coupons = List.of(
+                new UserCouponResponse.CouponItem(
+                        1L, "신규 가입 할인 쿠폰", 5000L,
+                        CouponStatus.AVAILABLE, LocalDateTime.parse("2025-01-01T10:30:00"),
+                        LocalDateTime.parse("2025-01-02T23:59:59"), null
+                ),
+                new UserCouponResponse.CouponItem(
+                        2L, "추가 할인 쿠폰", 3000L,
+                        CouponStatus.USED, LocalDateTime.parse("2024-12-24T00:00:00"),
+                        LocalDateTime.parse("2025-01-01T23:59:59"),
+                        LocalDateTime.parse("2024-12-25T14:20:00")
+                )
+        );
 
-        List<Map<String, Object>> coupons = new ArrayList<>();
+        UserCouponResponse response = new UserCouponResponse(coupons);
 
-        Map<String, Object> coupon1 = new HashMap<>();
-        coupon1.put("userCouponId", 1);
-        coupon1.put("couponName", "신규 가입 할인 쿠폰");
-        coupon1.put("discountAmount", 5000);
-        coupon1.put("status", "미사용");
-        coupon1.put("expiredAt", "2025-01-02T23:59:59");
-        coupon1.put("issueDate", "2025-01-01T10:30:00");
-
-        Map<String, Object> coupon2 = new HashMap<>();
-        coupon2.put("userCouponId", 2);
-        coupon2.put("couponName", "추가 할인 쿠폰");
-        coupon2.put("discountAmount", 3000);
-        coupon2.put("status", "사용완료");
-        coupon2.put("expiredAt", "2025-01-01T23:59:59");
-        coupon2.put("issueDate", "2024-12-24T00:00:00");
-        coupon2.put("usedDate", "2024-12-25T14:20:00");
-
-        coupons.add(coupon1);
-        coupons.add(coupon2);
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("coupons", coupons);
-
-        response.put("success", true);
-        response.put("statusCode", 200);
-        response.put("message", "보유 쿠폰 조회가 완료되었습니다.");
-        response.put("data", data);
-
-        return response;
+        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.COUPONS_FOUND, response));
     }
 }

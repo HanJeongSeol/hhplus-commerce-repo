@@ -1,73 +1,89 @@
 package kr.hhplus.be.server.interfaces.api.order;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import kr.hhplus.be.server.interfaces.dto.order.CreateOrderRequest;
+import kr.hhplus.be.server.interfaces.dto.order.OrderItemResponse;
+import kr.hhplus.be.server.interfaces.dto.order.OrderResponse;
+import kr.hhplus.be.server.support.constant.OrderStatus;
+import kr.hhplus.be.server.support.constant.SuccessCode;
+import kr.hhplus.be.server.support.http.CustomApiResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Tag(name = "orders", description = "주문 API")
 @RestController
 @RequestMapping("/api/v1/orders")
 public class OrderController {
 
-    /**
-     * 주문 생성 Mock API
-     * {
-     *     "data": {
-     *         "totalAmount": 50000,
-     *         "orderDetails": [
-     *             {
-     *                 "unitPrice": 25000,
-     *                 "quantity": 2,
-     *                 "totalPrice": 50000,
-     *                 "productName": "항해 기념품"
-     *             }
-     *         ],
-     *         "orderId": 1,
-     *         "appliedCoupon": {
-     *             "couponName": "신규 가입 할인 쿠폰",
-     *             "discountAmount": 5000
-     *         },
-     *         "discountAmount": 5000,
-     *         "orderDate": "2025-01-01T10:30:00",
-     *         "paymentAmount": 45000
-     *     },
-     *     "success": true,
-     *     "message": "주문서가 생성되었습니다.",
-     *     "statusCode": 201
-     * }
-     */
+    @Operation(summary = "주문 생성", description = "새로운 주문을 생성합니다.")
     @PostMapping
-    public Map<String, Object> createOrder(@RequestBody Map<String, Object> request) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<CustomApiResponse<OrderResponse>> createOrder(
+            @RequestBody CreateOrderRequest request) {
 
-        Map<String, Object> orderDetail = new HashMap<>();
-        orderDetail.put("productName", "항해 기념품");
-        orderDetail.put("quantity", request.get("quantity"));
-        orderDetail.put("unitPrice", 25000);
-        orderDetail.put("totalPrice", 50000);
+        // Mock 응답 데이터 생성 (실제 구현 시에는 Facade 호출)
+        OrderItemResponse orderItem = new OrderItemResponse(
+                1L,
+                "항해 기념품",
+                request.items().get(0).quantity(),
+                25000L,
+                50000L
+        );
 
-        Map<String, Object> couponInfo = new HashMap<>();
-        couponInfo.put("couponName", "신규 가입 할인 쿠폰");
-        couponInfo.put("discountAmount", 5000);
+        OrderItemResponse orderItem1 = new OrderItemResponse(
+                2L,
+                "항해 후드티",
+                request.items().get(0).quantity(),
+                15000L,
+                30000L
+        );
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("orderId", 1);
-        data.put("orderDate", "2025-01-01T10:30:00");
-        data.put("totalAmount", 50000);
-        data.put("discountAmount", 5000);
-        data.put("paymentAmount", 45000);
-        data.put("orderDetails", List.of(orderDetail));
-        data.put("appliedCoupon", couponInfo);
+        List<OrderItemResponse> orderItemList = Stream.of(orderItem, orderItem1)
+                .collect(Collectors.toList());
+        System.out.println(orderItemList.get(0));
+        System.out.println(orderItemList.get(1));
+        OrderResponse response = new OrderResponse(
+                1L,
+                request.userId(),
+                OrderStatus.PENDING,  // 초기 상태는 PENDING
+                LocalDateTime.now(),
+                50000L,
+                orderItemList
+        );
 
-        response.put("success", true);
-        response.put("statusCode", 201);
-        response.put("message", "주문서가 생성되었습니다.");
-        response.put("data", data);
+        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.ORDER_CREATED, response));
+    }
 
-        return response;
+    @Operation(summary = "주문 조회", description = "주문 정보를 조회합니다.")
+    @GetMapping("/{orderId}")
+    public ResponseEntity<CustomApiResponse<OrderResponse>> getOrder(
+            @Parameter(description = "주문 ID", required = true)
+            @PathVariable Long orderId) {
+
+        // Mock 응답 데이터 생성 (실제 구현 시에는 Facade 호출)
+        OrderItemResponse orderItem = new OrderItemResponse(
+                1L,
+                "항해 기념품",
+                2,
+                25000L,
+                50000L
+        );
+
+        OrderResponse response = new OrderResponse(
+                orderId,
+                1L,
+                OrderStatus.PENDING,
+                LocalDateTime.now(),
+                50000L,
+                List.of(orderItem)
+        );
+
+        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.ORDER_FOUND, response));
     }
 }
