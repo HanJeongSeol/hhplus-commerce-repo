@@ -19,6 +19,7 @@ public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="product_id")
     @Comment("상품 식별자")
     private Long productId;
 

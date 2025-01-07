@@ -16,6 +16,7 @@ public class OrderDetail extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="order_detail_id")
     @Comment("주문 상세 내역 식별자")
     private Long orderDetailId;
 

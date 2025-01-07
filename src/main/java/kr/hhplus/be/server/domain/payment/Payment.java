@@ -17,6 +17,7 @@ import org.hibernate.annotations.Comment;
 public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="payment_id")
     @Comment("결제 식별자")
     private Long paymentId;
 

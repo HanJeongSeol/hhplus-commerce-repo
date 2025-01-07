@@ -21,6 +21,7 @@ public class UserCoupon extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_coupon_id")
     @Comment("사용자 쿠폰 식별자")
     private Long userCouponId;
 

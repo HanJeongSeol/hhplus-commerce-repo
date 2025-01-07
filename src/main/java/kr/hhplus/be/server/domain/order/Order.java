@@ -22,6 +22,7 @@ public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="order_id")
     @Comment("주문 식별자")
     private Long orderId;
 
