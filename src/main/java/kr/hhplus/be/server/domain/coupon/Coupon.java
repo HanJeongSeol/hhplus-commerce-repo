@@ -9,6 +9,8 @@ import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "coupon")
@@ -43,6 +45,9 @@ public class Coupon extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Comment("쿠폰 상태")
     private CouponStatus status;
+
+    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
+    private List<UserCoupon> userCoupons = new ArrayList<>();
 
     /**
      * 쿠폰 발급

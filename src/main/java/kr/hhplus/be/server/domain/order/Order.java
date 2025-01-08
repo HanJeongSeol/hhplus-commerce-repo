@@ -48,7 +48,7 @@ public class Order extends BaseEntity {
     @Comment("주문 상태")
     private OrderStatus status;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     // 주문 상세 내역
     private List<OrderDetail> orderDetails;
 

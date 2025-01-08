@@ -29,32 +29,44 @@ public class User extends BaseEntity {
     @Comment("사용자 식별자")
     private Long userId;
 
-//    @Column(name="point_id", nullable = false)
-//    @Comment("포인트 식별자")
-//    private Long pointId;
-
     @Column(nullable = false)
     @Comment("사용자 이름")
     private String name;
 
-    // Point 엔티티와의 연관 관계 (조회 전용)
-    @OneToOne(fetch = FetchType.LAZY)
+    // Point 엔티티와의 연관 관계
+    // 연관관계의 주인이 되기 때문에 insertable = false, updateable = false 제거
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(
-            name="point_id" ,   // User 테이블의 point_id
+            name = "point_id",   // User 테이블의 point_id
             referencedColumnName = "point_id",   // Point 테이블의 point_id 참조
-            insertable = false,
-            updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
     private Point point;
 
     // 사용자 보유 쿠폰 리스트
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<UserCoupon> userCoupons = new ArrayList<>();
 
     // 사용자 주문 내역 리스트
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Order> orders = new ArrayList<>();
+
+    // 초기 제공 포인트 (상수 관리)
+    private static final long INITIAL_BALANCE_AMOUNT = 1_000L;
+
+    /**
+     * 사용자 생성 시 포인트 추가
+     */
+    public void initialPoint(){
+        if(this.point==null){
+            this.point = Point.builder()
+                    .balance(INITIAL_BALANCE_AMOUNT)
+                    .user(this)
+                    .build();
+        }
+    }
 
     /**
      * 사용자 포인트 정보 존재 여부 확인
