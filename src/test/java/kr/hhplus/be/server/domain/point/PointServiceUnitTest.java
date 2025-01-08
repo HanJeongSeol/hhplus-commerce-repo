@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("포인트 서비스 테스트")
-public class PointServiceTest {
+public class PointServiceUnitTest {
 
     @InjectMocks
     private PointService pointService;
@@ -53,7 +53,7 @@ public class PointServiceTest {
             // given
             Long chargeAmount = 1_000L;
 
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
             given(pointRepository.save(point)).willReturn(point);
 
             // when
@@ -71,7 +71,7 @@ public class PointServiceTest {
             point.charge(9_989_000L);  // 1_000L 보유 중 + 9_990_000L = 10_000_000L
             Long chargeAmount = 10_000L;
 
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
             given(pointRepository.save(point)).willReturn(point);
 
             // when
@@ -86,7 +86,7 @@ public class PointServiceTest {
         @DisplayName("잘못된 포인트 금액이 들어올 시 예외 발생")
         void 포인트_충전_금액으로_0_혹은_음수가_입력된다면_INVALID_POINT_AMOUNT_예외_발생(Long chargeAmount) {
             // given
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
 
             // when & then\
             BusinessException exception = assertThrows(BusinessException.class,
@@ -104,7 +104,7 @@ public class PointServiceTest {
             point.charge(9_961_000L);   // 현재 포인트 설정
             Long chargeAmount = 50_000L;
 
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
 
             // when & then
             BusinessException exception = assertThrows(BusinessException.class,
@@ -124,7 +124,7 @@ public class PointServiceTest {
         @DisplayName("포인트 조회 성공")
         void 조회_요청에_성공하면_1_000L_포인트를_반환한다() {
             // given
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
 
             // when
             Point foundPoint = pointService.getPoint(user);
@@ -139,7 +139,7 @@ public class PointServiceTest {
         @DisplayName("사용자 포인트 정보가 없을 시 예외를 발생한다")
         void 사용자_포인트_정보가_존재하지_않을_경우_USER_POINT_NOT_FOUND_EXCEPTION_예외_발생() {
             // given
-            given(pointRepository.findByUser(user)).willReturn(Optional.empty());
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.empty());
 
             // when & then
             BusinessException exception = assertThrows(BusinessException.class,
@@ -159,7 +159,7 @@ public class PointServiceTest {
             point.charge(49_000L);  // 기본 제공 1000 + 49000 = 50000
             Long useAmount = 5_000L;
 
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
             given(pointRepository.save(point)).willReturn(point);
 
             // when
@@ -178,7 +178,7 @@ public class PointServiceTest {
             point.charge(9_000L);  // 1_000L(기본제공) + 9_000L = 10_000L
             Long useAmount = 10_000L;
 
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
             given(pointRepository.save(point)).willReturn(point);
 
             // when
@@ -194,7 +194,7 @@ public class PointServiceTest {
         @DisplayName("잘못된 포인트 금액이 들어올 시 예외 발생")
         void 포인트_사용_금액으로_0_혹은_음수가_입력된다면_INVALID_POINT_AMOUNT_예외_발생(Long useAmount) {
             // given
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
 
             // when & then\
             BusinessException exception = assertThrows(BusinessException.class,
@@ -210,7 +210,7 @@ public class PointServiceTest {
             point.charge(49_000L);
             Long useAmount = 100_000L;
 
-            given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+            given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
 
             // when & then
             BusinessException exception = assertThrows(BusinessException.class,
@@ -225,7 +225,7 @@ public class PointServiceTest {
         // given
         Long chargeAmount = 1_000L;
 
-        given(pointRepository.findByUser(user)).willReturn(Optional.of(point));
+        given(pointRepository.findByUserWithLock(user)).willReturn(Optional.of(point));
         given(pointRepository.save(point)).willReturn(point);
 
         // when
@@ -233,7 +233,7 @@ public class PointServiceTest {
 
         // then
         // findByUser가 호출되었는지 검증
-        verify(pointRepository, times(1)).findByUser(user);
+        verify(pointRepository, times(1)).findByUserWithLock(user);
 
         assertThat(point.getBalance()).isEqualTo(2_000L);
     }

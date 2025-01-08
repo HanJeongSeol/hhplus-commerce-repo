@@ -7,7 +7,7 @@ spring:
     name: HangHaePlusDataSource
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
-      maximum-pool-size: 3
+      maximum-pool-size: 20
       connection-timeout: 10000
       max-lifetime: 60000
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,7 +16,7 @@ spring:
     generate-ddl: false
     show-sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
@@ -32,6 +32,12 @@ springdoc:
   packages-to-scan: kr.hhplus.be.server.interfaces.api   # 패키지 스캔 범위
   paths-to-match: /api/**  # Swagger에 포함할 API 엔드포인트 경로 필터링
 
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    kr.hhplus: INFO
+
 ---
 spring.config.activate.on-profile: local, test
 
@@ -40,3 +46,4 @@ spring:
     url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
     username: application
     password: application
+
