@@ -56,7 +56,7 @@ public class Product extends BaseEntity {
             throw new BusinessException(ErrorCode.INVALID_ORDER_QUANTITY);
         }
         if(this.stock<quantity){
-            throw new BusinessException(ErrorCode.PRODUCT_OUT_OF_STOCK);
+            throw new BusinessException(ErrorCode.INVALID_ORDER_QUANTITY);
         }
     }
 
@@ -64,4 +64,6 @@ public class Product extends BaseEntity {
         this.status = (this.stock > 0)
                 ? ProductStatus.ON_SALE : ProductStatus.SOLD_OUT;
     }
+
+
 }

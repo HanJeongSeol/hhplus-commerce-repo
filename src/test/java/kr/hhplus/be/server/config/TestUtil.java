@@ -3,8 +3,10 @@ package kr.hhplus.be.server.config;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.point.Point;
+import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.support.constant.CouponStatus;
+import kr.hhplus.be.server.support.constant.ProductStatus;
 
 import java.time.LocalDateTime;
 
@@ -65,6 +67,16 @@ public abstract class TestUtil {
                 .status(CouponStatus.AVAILABLE)
                 .coupon(testCoupon)
                 .user(testUser)
+                .build();
+    }
+
+    public static Product createProduct(){
+        return Product.builder()
+                .productId(1L)
+                .name("항해 기념품")
+                .price(10000L)
+                .stock(100)
+                .status(ProductStatus.ON_SALE)
                 .build();
     }
 
