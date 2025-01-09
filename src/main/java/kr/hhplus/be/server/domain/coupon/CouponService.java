@@ -36,6 +36,14 @@ public class CouponService {
         userCoupon.use();
         return couponRepository.save(userCoupon);
     }
+
+    @Transactional
+    public Coupon getCoupon(Long couponId){
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+        return coupon;
+    }
+
     @Transactional
     public List<UserCoupon> getUserCoupons(Long userId) {
         return couponRepository.findUserCoupons(userId);
