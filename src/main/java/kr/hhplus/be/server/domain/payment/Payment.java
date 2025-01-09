@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.BaseEntity;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.PaymentStatus;
+import kr.hhplus.be.server.support.exception.BusinessException;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
@@ -56,5 +58,34 @@ public class Payment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Comment("결제 상태")
     private PaymentStatus status;
+
+    public static Payment createPayment(Long orderId, Long userId, Long paymentAmount) {
+        return Payment.builder()
+                .orderId(orderId)
+                .userId(userId)
+                .paymentAmount(paymentAmount)
+                .status(PaymentStatus.PENDING)
+                .build();
+    }
+
+    public void complete() {
+        validatePaymentStatus();
+        this.status = PaymentStatus.PAID;
+    }
+
+
+    public void cancel() {
+        validatePaymentStatus();
+        this.status = PaymentStatus.CANCELLED;
+    }
+
+    private void validatePaymentStatus() {
+        if(this.status == PaymentStatus.PAID){
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+        if (this.status == PaymentStatus.CANCELLED) {
+            throw new BusinessException(ErrorCode.PAYMENT_CANCELLED);
+        }
+    }
 
 }
