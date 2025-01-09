@@ -47,6 +47,7 @@ public class Coupon extends BaseEntity {
     private CouponStatus status;
 
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<UserCoupon> userCoupons = new ArrayList<>();
 
     /**
