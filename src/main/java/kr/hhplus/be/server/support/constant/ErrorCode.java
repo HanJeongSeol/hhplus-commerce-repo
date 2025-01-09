@@ -42,7 +42,10 @@ public enum ErrorCode {
     PAYMENT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST,  "이미 결제가 완료된 주문입니다"),
     PAYMENT_CANCELLED(HttpStatus.BAD_REQUEST, "취소된 결제입니다"),
     DUPLICATE_PAYMENT(HttpStatus.BAD_REQUEST, "이미 결제정보가 존재합니다"),
-    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "잘못된 결제 금액입니다");
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "잘못된 결제 금액입니다"),
+
+    // 사용자 에러 코드
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다");
 
 
 
