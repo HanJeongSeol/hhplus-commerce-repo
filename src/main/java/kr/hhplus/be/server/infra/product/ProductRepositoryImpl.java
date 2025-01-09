@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.infra.product;
 
 import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.domain.product.ProductPopularQueryDto;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository productJpaRepository;
+    private final ProductQueryDslRepository productQueryDslRepository;
 
     @Override
     public Product save(Product product) {
@@ -39,5 +41,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Page<Product> findAll(Pageable pageable) {
         return productJpaRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<ProductPopularQueryDto> findPopularProducts() {
+        return productQueryDslRepository.findPopularProducts();
     }
 }

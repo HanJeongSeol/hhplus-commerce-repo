@@ -17,4 +17,6 @@ public interface ProductRepository {
     Optional<Product> findByIdWithLock(Long productId);
 
     Page<Product> findAll(Pageable pageable);
+
+    List<ProductPopularQueryDto> findPopularProducts();
 }

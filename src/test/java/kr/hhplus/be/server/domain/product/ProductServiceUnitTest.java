@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.config.TestUtil;
 import kr.hhplus.be.server.support.constant.ErrorCode;
+import kr.hhplus.be.server.support.constant.ProductStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,8 @@ public class ProductServiceUnitTest {
     @Mock
     private ProductRepository productRepository;
 
+    private List<ProductPopularQueryDto> testPopularProducts;
+
     private Product testProduct;
     private List<Product> testProductList;
     @BeforeEach
@@ -53,6 +56,11 @@ public class ProductServiceUnitTest {
                         .price(30000L)
                         .stock(20)
                         .build()
+        );
+        testPopularProducts = List.of(
+                new ProductPopularQueryDto(1L, "인기상품1", 100L, 10000L, 50, ProductStatus.ON_SALE),
+                new ProductPopularQueryDto(2L, "인기상품2", 80L, 20000L, 30, ProductStatus.ON_SALE),
+                new ProductPopularQueryDto(3L, "인기상품3", 60L, 15000L, 0, ProductStatus.SOLD_OUT)
         );
     }
 
@@ -98,6 +106,42 @@ public class ProductServiceUnitTest {
             assertThat(resultPage.getTotalElements()).isEqualTo(5);
             assertThat(resultPage.getContent().get(0).getName()).isEqualTo("항해 기념품");
         }
+
+        @Test
+        @DisplayName("인기 상품 목록 조회 성공")
+        void 최근_3일간_가장_많이_팔린_상품_5개를_순위와_함께_반환한다() {
+            // given
+            given(productRepository.findPopularProducts())
+                    .willReturn(testPopularProducts);
+
+            // when
+            List<ProductPopularList> result = productService.getPopularProducts();
+
+            // then
+            assertThat(result).hasSize(3);
+            assertThat(result.get(0))
+                    .satisfies(product -> {
+                        assertThat(product.rank()).isEqualTo(1);
+                        assertThat(product.productId()).isEqualTo(1L);
+                        assertThat(product.productName()).isEqualTo("인기상품1");
+                        assertThat(product.salesCount()).isEqualTo(100L);
+                    });
+
+            verify(productRepository).findPopularProducts();
+        }
+
+        @Test
+        @DisplayName("인기 상품이 없을 경우 예외 전달")
+        void 인기_상품이_없는_경우_PRODUCT_NOT_FOUND_예외_전달() {
+            // given
+            given(productRepository.findPopularProducts())
+                    .willReturn(List.of());
+
+            // when & then
+            assertThatThrownBy(() -> productService.getPopularProducts())
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+        }
     }
 
     @Nested
@@ -131,6 +175,8 @@ public class ProductServiceUnitTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
         }
+
+
     }
 
     @Nested
