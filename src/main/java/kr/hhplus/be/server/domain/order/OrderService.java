@@ -25,7 +25,7 @@ public class OrderService {
     public Order createOrder(Long userId, List<OrderDetailProduct> orderProducts) {
         validateOrderProducts(orderProducts);
 
-        Order order = Order.createOrder(userId);
+        final Order savedOrder = orderRepository.save(Order.createOrder(userId));
 
         orderProducts.forEach(product -> {
             OrderDetail orderDetail = OrderDetail.createOrderDetail(
@@ -33,10 +33,13 @@ public class OrderService {
                     product.quantity(),
                     product.price()
             );
-            order.addOrderDetail(orderDetail);
+            savedOrder.addOrderDetail(orderDetail);
         });
 
-        return orderRepository.save(order);
+        Long sum = savedOrder.getTotalAmount();
+        savedOrder.setTotalAmount(sum);
+
+        return orderRepository.save(savedOrder);
     }
 
     // 주문 조회
