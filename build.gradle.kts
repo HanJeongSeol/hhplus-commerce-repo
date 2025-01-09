@@ -34,11 +34,24 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	compileOnly("org.projectlombok:lombok:1.18.22")
+	annotationProcessor("org.projectlombok:lombok")
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
 
-    // Test
+	// swagger
+	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.0")
+
+	// queryDsl 시작
+	implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
+	annotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	// queryDsl 끝
+
+
+	// Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
