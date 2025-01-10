@@ -62,21 +62,15 @@ public class OrderDetail extends BaseEntity {
         OrderDetail orderDetail = new OrderDetail();
         orderDetail.productId = productId;
         orderDetail.stock = stock;
-        orderDetail.totalAmount = stock * price;
+        orderDetail.totalAmount = calculateTotalAmount(stock, price);
         return orderDetail;
     }
-
+    private static long calculateTotalAmount(Integer stock, Long price) {
+        return stock * price;
+    }
     public void assignOrder(Order order) {
         this.order = order;
         this.orderId = order.getOrderId();
-    }
-
-    /**
-     * 주문 총 가격 설정
-     * - 상품 가격 * 주문 수량
-     */
-    public void setTotalAmount(){
-        this.totalAmount = product.getPrice() * this.stock;
     }
 
 }

@@ -59,6 +59,7 @@ public class Order extends BaseEntity {
                 .userId(userId)
                 .status(OrderStatus.PENDING)
                 .orderDetails(new ArrayList<>())
+                .totalAmount(0L)
                 .build();
     }
 
@@ -112,6 +113,10 @@ public class Order extends BaseEntity {
         if (this.status != OrderStatus.PENDING) {
             throw new BusinessException(ErrorCode.INVALID_ORDER_STATUS);
         }
+    }
+
+    public void setTotalAmount(Long amount) {
+        this.totalAmount = amount;
     }
 
 }
