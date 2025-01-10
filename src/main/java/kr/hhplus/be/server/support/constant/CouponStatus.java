@@ -4,11 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public enum CouponStatus {
     @Schema(description = "사용 가능")
-    AVAILABLE,
+    ACTIVE,
     @Schema(description = "사용 완료")
     USED,
     @Schema(description = "만료")
-    INVALID,
+    EXPIRED,
     @Schema(description = "유효")
     VALID
 }

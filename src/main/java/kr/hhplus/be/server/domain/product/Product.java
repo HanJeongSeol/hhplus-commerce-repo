@@ -40,11 +40,7 @@ public class Product extends BaseEntity {
 
     /**
      * 상품 재고 감소
-     * 1. 재고 감소 유효성 검증
-     * 2. 재고 수량 감소
-     * 3. 상품 상태 업데이트
      */
-
     public void decreaseStock(int quantity){
         validateStockDecrease(quantity);
         this.stock -= quantity;

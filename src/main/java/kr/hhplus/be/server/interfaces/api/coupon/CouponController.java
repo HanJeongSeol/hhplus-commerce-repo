@@ -27,7 +27,7 @@ public class CouponController {
                 1L,
                 "신규 가입 할인 쿠폰",
                 5000L,
-                CouponStatus.AVAILABLE,
+                CouponStatus.ACTIVE,
                 LocalDateTime.parse("2025-01-01T10:30:00"),
                 LocalDateTime.parse("2025-01-02T23:59:59")
         );
@@ -42,7 +42,7 @@ public class CouponController {
         List<UserCouponResponse.CouponItem> coupons = List.of(
                 new UserCouponResponse.CouponItem(
                         1L, "신규 가입 할인 쿠폰", 5000L,
-                        CouponStatus.AVAILABLE, LocalDateTime.parse("2025-01-01T10:30:00"),
+                        CouponStatus.ACTIVE, LocalDateTime.parse("2025-01-01T10:30:00"),
                         LocalDateTime.parse("2025-01-02T23:59:59"), null
                 ),
                 new UserCouponResponse.CouponItem(

@@ -639,70 +639,49 @@ sequenceDiagram
     participant OrderService
     participant DB
 
-    User->>OrderController: 상품 주문 요청 [사용자 식별자, 상품 식별자, 수량, 쿠폰 식별자]
+    User->>OrderController: 상품 주문 요청 [사용자 식별자, 상품 식별자, 수량]
     activate OrderController
     OrderController->>OrderFacade: 주문 처리 요청
     activate OrderFacade
-    
-    %% 상품 유효성 검증
+
+%% 상품 유효성 검증
     OrderFacade->>ProductService: 상품 조회 요청
     activate ProductService
-    
+
     ProductService->>ProductService: 상품 식별자 유효성 검증
     opt 유효하지 않은 상품
         ProductService-->>OrderFacade: "유효하지 않은 상품" 예외 반환
         OrderFacade-->>OrderController: 예외 전달
         OrderController-->>User: "유효하지 않은 상품"
     end
-    
+
     ProductService->>DB: 상품 정보 조회 (SELECT)
     activate DB
     DB-->>ProductService: 상품 정보 반환
     deactivate DB
-    
+
     ProductService->>ProductService: 상품 상태 검증
     opt 판매 불가 상품
         ProductService-->>OrderFacade: "현재 구매할 수 없는 상품입니다" 예외 반환
         OrderFacade-->>OrderController: 예외 전달
         OrderController-->>User: "현재 구매할 수 없는 상품입니다"
     end
-    
+
     ProductService-->>OrderFacade: 상품 정보 전달
     deactivate ProductService
 
-    %% 쿠폰 검증
-    opt 쿠폰 사용하는 경우
-        OrderFacade->>CouponService: 쿠폰 조회 및 검증 요청
-        activate CouponService
-        
-        CouponService->>DB: 쿠폰 발급 이력 조회 (SELECT)
-        activate DB
-        DB-->>CouponService: 쿠폰 정보 반환
-        deactivate DB
-        
-        CouponService->>CouponService: 쿠폰 유효성 검증
-        opt 쿠폰 검증 실패
-            CouponService-->>OrderFacade: "사용 불가능한 쿠폰" 예외 반환
-            OrderFacade-->>OrderController: 예외 전달
-            OrderController-->>User: "사용 불가능한 쿠폰입니다"
-        end
-        
-        CouponService-->>OrderFacade: 쿠폰 정보 전달
-        deactivate CouponService
-    end
-
-    %% 주문서 생성
+%% 주문서 생성
     OrderFacade->>OrderService: 주문서 생성 요청
     activate OrderService
-    
+
     OrderService->>DB: 주문서 저장 (INSERT)
     activate DB
     DB-->>OrderService: 저장 완료
     deactivate DB
-    
+
     OrderService-->>OrderFacade: 주문서 정보 반환
     deactivate OrderService
-    
+
     OrderFacade-->>OrderController: 주문서 생성 완료
     deactivate OrderFacade
     OrderController-->>User: 주문서 생성 완료 (결제 대기)

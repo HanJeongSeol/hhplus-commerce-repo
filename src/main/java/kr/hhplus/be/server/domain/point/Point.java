@@ -23,13 +23,13 @@ public class Point extends BaseEntity {
     @Comment("포인트 식별자")
     private Long pointId;
 
+    @Column
+    @Comment("사용자 식별자")
+    private Long userId;
+
     @Column(nullable = false)
     @Comment("포인트 잔고")
     private Long balance;
-
-    // User와의 연관 관계
-    @OneToOne(mappedBy = "point", fetch = FetchType.LAZY)
-    private User user;
 
 
     // 최대 포인트 한도 (상수로 관리)
@@ -37,18 +37,7 @@ public class Point extends BaseEntity {
 
     /**
      * 포인트 충전
-     * 1. 충전 금액 유효성 검증
-     * 2. 포인트 잔액 업데이트
      */
-    private void validateChargeAmount(Long amount){
-        if(amount <= 0){
-            throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT);
-        }
-        long balanceUpdate = this.balance + amount;
-        if (balanceUpdate > MAX_POINT_AMOUNT){
-            throw new BusinessException(ErrorCode.POINT_EXCEED_MAX_VALUE);
-        }
-    }
     public void charge(Long amount){
         validateChargeAmount(amount);
         this.balance += amount;
@@ -56,9 +45,21 @@ public class Point extends BaseEntity {
 
     /**
      * 포인트 사용
-     * 1. 사용 금액 유효성 검증
-     * 2. 잔액 차감
      */
+    public void use(Long amount){
+        validateUseAmount(amount);
+        this.balance -= amount;
+    }
+
+    private void validateChargeAmount(Long amount){
+        if(amount <= 0 ){
+            throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT);
+        }
+        if (this.balance + amount > MAX_POINT_AMOUNT){
+            throw new BusinessException(ErrorCode.POINT_EXCEED_MAX_VALUE);
+        }
+    }
+
     private void validateUseAmount(Long amount){
         if(amount <=0){
             throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT);
@@ -68,9 +69,6 @@ public class Point extends BaseEntity {
         }
     }
 
-    public void use(Long amount){
-        validateUseAmount(amount);
-        this.balance -= amount;
-    }
+
 
 }

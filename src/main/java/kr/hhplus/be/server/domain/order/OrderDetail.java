@@ -28,55 +28,25 @@ public class OrderDetail extends BaseEntity {
     @Comment("상품 식별자")
     private Long productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "order_id",
-            referencedColumnName = "order_id",
-            insertable = false,
-            updatable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    )
-    private Order order;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "product_id",
-            referencedColumnName = "product_id",
-            insertable = false,
-            updatable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    )
-    private Product product;
-
     @Column(nullable = false)
     @Comment("주문 수량")
-    private Integer stock;
+    private Integer quantity;
 
     @Column(nullable = false)
     @Comment("총 금액")
-    private Long totalAmount;
+    private Long totalPrice;
 
 
 
-    public static OrderDetail createOrderDetail(Long productId, Integer stock, Long price) {
-        OrderDetail orderDetail = new OrderDetail();
-        orderDetail.productId = productId;
-        orderDetail.stock = stock;
-        orderDetail.totalAmount = stock * price;
-        return orderDetail;
+    public static OrderDetail createOrderDetail(Long productId, Integer quantity, Long price) {
+        OrderDetail detail = new OrderDetail();
+        detail.productId = productId;
+        detail.quantity = quantity;
+        detail.totalPrice = (long) quantity * price;
+        return detail;
     }
 
-    public void assignOrder(Order order) {
-        this.order = order;
-        this.orderId = order.getOrderId();
+    public void assignOrder(Long orderId){
+        this.orderId = orderId;
     }
-
-    /**
-     * 주문 총 가격 설정
-     * - 상품 가격 * 주문 수량
-     */
-    public void setTotalAmount(){
-        this.totalAmount = product.getPrice() * this.stock;
-    }
-
 }

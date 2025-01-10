@@ -30,62 +30,43 @@ public class Order extends BaseEntity {
     @Comment("사용자 식별자")
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_id",
-            referencedColumnName = "user_id",
-            insertable = false,
-            updatable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    )
-    private User user;
 
     @Column(nullable = false)
     @Comment("주문 총 금액")
-    private Long totalAmount;
+    private Long totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Comment("주문 상태")
     private OrderStatus status;
 
-    @OneToMany(mappedBy = "order")
-    // 주문 상세 내역
-    private List<OrderDetail> orderDetails;
-
-
-    // 팩토리 메서드로 Order 생성
-    public static Order createOrder(Long userId) {
+    /**
+     * Order 객체 생성
+     */
+    public static Order createOrder(Long userId){
         return Order.builder()
                 .userId(userId)
                 .status(OrderStatus.PENDING)
-                .orderDetails(new ArrayList<>())
+                .totalPrice(0L)
                 .build();
     }
 
+    /**
+     * 주문 상세 추가 & 전체 금액 반영
+     */
     public void addOrderDetail(OrderDetail orderDetail) {
-        this.orderDetails.add(orderDetail);
-        orderDetail.assignOrder(this);
+        orderDetail.assignOrder(this.orderId);
+        updateTotalPrice(orderDetail.getTotalPrice());
     }
-
 
     /**
      * 총 주문 금액
-     * 1. 사용자가 OrderDetails 리스트 객체를 전달.
-     * 2. Order 기본 객체 생성
-     * 3. order.add(OrderDetails[0~1]) -> 리스트에 저장된 데이터 저장 .
-     * 4. order.
      */
-    public long getTotalAmount() {
-        return this.orderDetails.stream()
-                .mapToLong(OrderDetail::getTotalAmount)
-                .sum();
+    public void updateTotalPrice(long detailPrice) {
+        this.totalPrice = (this.totalPrice == null ? 0 : this.totalPrice) + detailPrice;
     }
-
 
     /**
      * 주문 완료
-     * 1. 완료 가능 상태 검증
-     * 2. 주문 상태 COMPLETED 변경
      */
     public void complete() {
         validateCompletable();
@@ -94,8 +75,6 @@ public class Order extends BaseEntity {
 
     /**
      * 주문 취소
-     * 1. 취소 가능 상태 검증
-     * 2. 주문 상태 CANCELLED 변경
      */
     public void cancel() {
         validateCancellable();
@@ -113,5 +92,4 @@ public class Order extends BaseEntity {
             throw new BusinessException(ErrorCode.INVALID_ORDER_STATUS);
         }
     }
-
 }

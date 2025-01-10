@@ -30,7 +30,7 @@ public class Coupon extends BaseEntity {
 
     @Column(nullable = false)
     @Comment("할인 금액")
-    private Long discountAmount;
+    private Long discountPrice;
 
     @Column(nullable = false)
     @Comment("쿠폰 재고")
@@ -56,22 +56,28 @@ public class Coupon extends BaseEntity {
         updateStatus();
     }
 
-    private void validateIssuable(){
-        if(this.stock <= 0){
-            throw new BusinessException(ErrorCode.COUPON_OUT_OF_STOCK);
-        }
-        if(LocalDateTime.now().isAfter(this.expiredAt)){
-            this.status = CouponStatus.INVALID;
+
+    /**
+     * 만료 여부 확인
+     * - 만료 상태인 경우 or 시간이 경과된 경우
+     */
+    public boolean isExpired() {
+        return this.status == CouponStatus.EXPIRED || LocalDateTime.now().isAfter(this.expiredAt);
+    }
+
+    private void validateIssuable() {
+        if (isExpired()) {
+            this.status = CouponStatus.EXPIRED;
             throw new BusinessException(ErrorCode.COUPON_EXPIRED);
+        }
+        if (this.stock <= 0) {
+            throw new BusinessException(ErrorCode.COUPON_OUT_OF_STOCK);
         }
     }
     private void updateStatus(){
-        if(this.stock <= 0){
-            this.status = CouponStatus.INVALID;
+        if(this.stock == 0){
+            this.status = CouponStatus.EXPIRED;
         }
     }
 
-    public boolean isExpired(){
-        return this.status == CouponStatus.INVALID;
-    }
 }
