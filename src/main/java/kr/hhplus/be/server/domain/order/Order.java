@@ -53,9 +53,9 @@ public class Order extends BaseEntity {
     /**
      * 주문 상세 추가 & 전체 금액 반영
      */
-    public void addOrderDetail(OrderDetail orderDetail) {
-        orderDetail.assignOrder(this.orderId);
-        updateTotalPrice(orderDetail.getTotalPrice());
+    public void addOrderLine(OrderLine orderLine) {
+        orderLine.assignOrder(this.orderId);
+        updateTotalPrice(orderLine.getTotalPrice());
     }
 
     /**

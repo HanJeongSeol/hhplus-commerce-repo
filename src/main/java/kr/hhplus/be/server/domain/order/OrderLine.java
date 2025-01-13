@@ -2,23 +2,22 @@ package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.BaseEntity;
-import kr.hhplus.be.server.domain.product.Product;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "order_detail")
+@Table(name = "order_line")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderDetail extends BaseEntity {
+public class OrderLine extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="order_detail_id")
+    @Column(name="order_line_id")
     @Comment("주문 상세 내역 식별자")
-    private Long orderDetailId;
+    private Long orderLineId;
 
     @Column(name = "order_id", nullable = false)
     @Comment("주문 식별자")
@@ -38,12 +37,12 @@ public class OrderDetail extends BaseEntity {
 
 
 
-    public static OrderDetail createOrderDetail(Long productId, Integer quantity, Long price) {
-        OrderDetail detail = new OrderDetail();
-        detail.productId = productId;
-        detail.quantity = quantity;
-        detail.totalPrice = (long) quantity * price;
-        return detail;
+    public static OrderLine createOrderLine(Long productId, Integer quantity, Long price) {
+        OrderLine line = new OrderLine();
+        line.productId = productId;
+        line.quantity = quantity;
+        line.totalPrice = (long) quantity * price;
+        return line;
     }
 
     public void assignOrder(Long orderId){
