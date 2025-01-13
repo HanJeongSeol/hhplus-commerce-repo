@@ -40,10 +40,6 @@ public class Coupon extends BaseEntity {
     @Comment("쿠폰 만료 시간")
     private LocalDateTime expiredAt;
 
-    @Enumerated(EnumType.STRING)
-    @Comment("쿠폰 상태")
-    private CouponStatus status;
-
     /**
      * 쿠폰 발급
      * 1. 쿠폰 유효성 검사
@@ -53,30 +49,23 @@ public class Coupon extends BaseEntity {
     public void issue(){
         validateIssuable();
         this.stock--;
-        updateStatus();
     }
 
 
     /**
      * 만료 여부 확인
-     * - 만료 상태인 경우 or 시간이 경과된 경우
+     * - 현재 시간이 쿠폰 발급 만료 시간 기한을 넘긴 경우
      */
     public boolean isExpired() {
-        return this.status == CouponStatus.EXPIRED || LocalDateTime.now().isAfter(this.expiredAt);
+        return LocalDateTime.now().isAfter(this.expiredAt);
     }
 
     private void validateIssuable() {
         if (isExpired()) {
-            this.status = CouponStatus.EXPIRED;
             throw new BusinessException(ErrorCode.COUPON_EXPIRED);
         }
         if (this.stock <= 0) {
             throw new BusinessException(ErrorCode.COUPON_OUT_OF_STOCK);
-        }
-    }
-    private void updateStatus(){
-        if(this.stock == 0){
-            this.status = CouponStatus.EXPIRED;
         }
     }
 

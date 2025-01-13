@@ -8,7 +8,5 @@ public enum CouponStatus {
     @Schema(description = "사용 완료")
     USED,
     @Schema(description = "만료")
-    EXPIRED,
-    @Schema(description = "유효")
-    VALID
+    EXPIRED
 }

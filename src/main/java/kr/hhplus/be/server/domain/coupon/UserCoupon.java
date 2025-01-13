@@ -53,10 +53,11 @@ public class UserCoupon extends BaseEntity {
     }
 
     /**
-     * 사용 가능 상태 반환
+     * 사용 가능 상태 확인
+     * - 쿠폰이 사용 가능 상태 확인
      */
-    public boolean isAvailable(Coupon coupon) {
-        return this.status == CouponStatus.ACTIVE && !coupon.isExpired();
+    public boolean isAvailable() {
+        return this.status == CouponStatus.ACTIVE;
     }
 
     /**
@@ -65,6 +66,9 @@ public class UserCoupon extends BaseEntity {
     private void validateUsable(Coupon coupon){
         if(this.status == CouponStatus.USED){
             throw new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE);
+        }
+        if(this.status == CouponStatus.EXPIRED){
+            throw new BusinessException(ErrorCode.COUPON_EXPIRED);
         }
         if (coupon.isExpired()) {
             this.status = CouponStatus.EXPIRED;
