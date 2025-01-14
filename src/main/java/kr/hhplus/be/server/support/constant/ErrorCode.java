@@ -22,6 +22,7 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다"),
     PRODUCT_OUT_OF_STOCK(HttpStatus.BAD_REQUEST,  "상품이 품절되었습니다"),
 
+
     // 쿠폰 에러 코드
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "쿠폰을 찾을 수 없습니다"),
     COUPON_ALREADY_ISSUED(HttpStatus.BAD_REQUEST,  "이미 발급된 쿠폰입니다"),
@@ -34,6 +35,8 @@ public enum ErrorCode {
     INVALID_ORDER_QUANTITY(HttpStatus.BAD_REQUEST,  "유효하지 않은 주문 수량입니다"),
     ORDER_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST,  "이미 취소된 주문입니다"),
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 주문 상태입니다"),
+    INVALID_ORDER_REQUEST(HttpStatus.BAD_REQUEST, "주문하실 상품을 찾을 수 없습니다"),
+    INVALID_PRODUCT_PRICE(HttpStatus.BAD_REQUEST, "주문하실 상품의 가격 정보를 찾을 수 없습니다"),
 
     // 결제 에러 코드
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND,  "결제 정보를 찾을 수 없습니다"),
