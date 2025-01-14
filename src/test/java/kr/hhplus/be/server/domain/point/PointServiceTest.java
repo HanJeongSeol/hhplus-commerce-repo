@@ -45,7 +45,7 @@ class PointServiceTest {
     class ChargePoint {
         @Test
         @DisplayName("포인트 충전 성공")
-        void chargePointSuccess() {
+        void userId와_chargeAmount가_주어지면_포인트_충전_성공() {
             // given
             Long userId = 1L;
             Long chargeAmount = 10000L;
@@ -68,7 +68,7 @@ class PointServiceTest {
     class UsePoint {
         @Test
         @DisplayName("포인트 사용 성공")
-        void usePointSuccess() {
+        void userId와_useAmount가_주어지면_포인트_사용_성공() {
             // given
             Long userId = 1L;
             Long useAmount = 500L;
@@ -87,7 +87,7 @@ class PointServiceTest {
 
         @Test
         @DisplayName("잔액 부족시 예외 발생")
-        void usePointInsufficientBalance() {
+        void 잔액이_부족한_상태에서_useAmount가_주어지면_INSUFFICIENT_POINT_BALANCE_예외_발생() {
             // given
             Long userId = 1L;
             Long useAmount = 2000L;
@@ -106,7 +106,7 @@ class PointServiceTest {
     class GetPoint {
         @Test
         @DisplayName("포인트 조회 성공")
-        void getPointSuccess() {
+        void userId가_주어지면_포인트_조회_성공() {
             // given
             Long userId = 1L;
             given(pointRepository.findByUserWithLock(userId))
@@ -121,8 +121,8 @@ class PointServiceTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 포인트 조회시 예외 발생")
-        void getPointNotFound() {
+        @DisplayName("존재하지 않는 사용자 포인트 조회시 예외 발생")
+        void  존재하지_않는_userId가_주어지면_USER_POINT_NOT_FOUND_예외_발생() {
             // given
             Long userId = 999L;
             given(pointRepository.findByUserWithLock(userId))

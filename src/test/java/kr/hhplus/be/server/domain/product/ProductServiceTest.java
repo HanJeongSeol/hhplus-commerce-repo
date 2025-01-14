@@ -56,7 +56,7 @@ class ProductServiceTest {
 
         @Test
         @DisplayName("상품 목록 조회 성공")
-        void 상품_목록_조회시_전체_상품_목록을_반환한다() {
+        void 상품_목록_조회시_전체_상품_목록을_반환() {
             // given
             given(productRepository.findAll())
                 .willReturn(testProducts);
@@ -77,7 +77,7 @@ class ProductServiceTest {
 
         @Test
         @DisplayName("상품 상세 조회 성공")
-        void 상품_ID로_조회시_상품_정보를_반환한다() {
+        void 상품_ID로_조회시_상품_정보를_반환() {
             // given
             given(productRepository.findByIdWithLock(testProduct.getProductId()))
                 .willReturn(Optional.of(testProduct));
@@ -131,7 +131,7 @@ class ProductServiceTest {
 
         @Test
         @DisplayName("재고보다 많은 수량 요청시 예외 발생")
-        void 재고보다_많은_수량_요청시_예외가_발생한다() {
+        void 재고보다_많은_수량_요청시_PRODUCT_OUT_OF_STOCK_예외_발생() {
             // given
             given(productRepository.findByIdWithLock(testProduct.getProductId()))
                 .willReturn(Optional.of(testProduct));
@@ -145,7 +145,7 @@ class ProductServiceTest {
 
         @Test
         @DisplayName("잘못된 수량 요청시 예외 발생")
-        void 잘못된_수량_요청시_예외가_발생한다() {
+        void 잘못된_수량_요청시_INVALID_ORDER_QUANTITY_예외_발생() {
             // given
             given(productRepository.findByIdWithLock(testProduct.getProductId()))
                 .willReturn(Optional.of(testProduct));

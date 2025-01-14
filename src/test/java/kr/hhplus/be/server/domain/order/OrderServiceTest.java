@@ -73,7 +73,7 @@ class OrderServiceTest {
     class CreateOrder {
         @Test
         @DisplayName("주문 생성 성공")
-        void createOrderSuccess() {
+        void userId와_상품목록이_주어지면_주문_생성() {
             // given
             given(orderRepository.save(any(Order.class)))
                     .willReturn(testOrder);
@@ -90,7 +90,7 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("주문 상품 목록이 비어있으면 예외 발생")
-        void createOrderWithEmptyProducts() {
+        void 주문상품목록이_비어있으면_INVALID_ORDER_REQUEST_예외_발생() {
             assertThatThrownBy(() -> orderService.createOrder(testUserId, List.of()))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(ErrorCode.INVALID_ORDER_REQUEST.getMessage());
@@ -98,7 +98,7 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("주문 수량이 0이나 음수인 경우 예외 발생")
-        void 주문_수량이_0_이하면_INVALID_ORDER_QUANTITY_예외_전달() {
+        void 주문_수량이_0_이하면_INVALID_ORDER_QUANTITY_예외_발생() {
             // given
             OrderLineProduct invalidProduct = OrderLineProduct.of(10L, 0, 10000L);
 
@@ -126,7 +126,7 @@ class OrderServiceTest {
     class GetOrder {
         @Test
         @DisplayName("주문 조회 성공")
-        void getOrderSuccess() {
+        void orderId가_주어지면_주문데이터_반환() {
             // given
             given(orderRepository.findByIdWithLines(1L))
                     .willReturn(Optional.of(testOrderResult));
@@ -143,7 +143,7 @@ class OrderServiceTest {
 
         @Test
         @DisplayName("존재하지 않는 주문 조회시 예외 발생")
-        void getOrderNotFound() {
+        void 존재하지않는_orderId가_주어지면_ORDER_NOT_FOUND_예외_발생() {
             given(orderRepository.findByIdWithLines(999L))
                     .willReturn(Optional.empty());
 
@@ -158,7 +158,7 @@ class OrderServiceTest {
     class GetUserOrders {
         @Test
         @DisplayName("사용자 주문 목록 조회 성공")
-        void getUserOrdersSuccess() {
+        void userId가_주어지면_사용자_주문목록_반환() {
             // given
             List<OrderResult> orderResults = List.of(testOrderResult);
             given(orderRepository.findByUserIdWithLines(testUserId))
