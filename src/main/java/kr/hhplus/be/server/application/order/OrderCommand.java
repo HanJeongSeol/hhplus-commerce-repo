@@ -10,11 +10,13 @@ public record OrderCommand(
         List<OrderLineCommand> orderLines
 ) {
     public record OrderLineCommand(
+            Long orderId,
             Long productId,
             Integer quantity
     ) {
         public OrderLine toEntity(Long price) {
             return OrderLine.createOrderLine(
+                    orderId,
                     productId,
                     quantity,
                     price
@@ -23,6 +25,6 @@ public record OrderCommand(
     }
 
     public Order toEntity() {
-        return Order.createOrder(userId);
+        return Order.create(userId);
     }
 }

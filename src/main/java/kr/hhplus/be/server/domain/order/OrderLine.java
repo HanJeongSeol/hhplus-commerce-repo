@@ -37,8 +37,9 @@ public class OrderLine extends BaseEntity {
 
 
 
-    public static OrderLine createOrderLine(Long productId, Integer quantity, Long price) {
+    public static OrderLine createOrderLine(Long orderId, Long productId, Integer quantity, Long price) {
         OrderLine line = new OrderLine();
+        line.orderId = orderId;
         line.productId = productId;
         line.quantity = quantity;
         line.totalPrice = (long) quantity * price;

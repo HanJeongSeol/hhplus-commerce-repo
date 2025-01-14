@@ -21,12 +21,7 @@ public class PaymentService {
      */
     @Transactional
     public Payment createPayment(Long orderId, Long userId, Long paymentPrice) {
-        Payment payment = Payment.builder()
-                .orderId(orderId)
-                .userId(userId)
-                .paymentPrice(paymentPrice)
-                .status(PaymentStatus.PENDING)
-                .build();
+        Payment payment = Payment.create(orderId, userId, paymentPrice);
 
         return paymentRepository.save(payment);
     }

@@ -23,21 +23,23 @@ public class OrderService {
     public Order createOrder(Long userId, List<OrderLineProduct> orderProducts){
         validateOrderProducts(orderProducts);
 
-        // Step 1: Order 생성
-        Order order = Order.createOrder(userId);
+        // Order 생성
+        Order order = Order.create(userId);
+        Order saveOrder = orderRepository.save(order);  // orderId 생성 위해 먼저 저장
 
-        // Step 2: OrderLine 추가
+        // OrderLine 추가
         orderProducts.forEach(product -> {
             OrderLine orderLine = OrderLine.createOrderLine(
+                    saveOrder.getOrderId(),
                     product.productId(),
                     product.quantity(),
                     product.price()
             );
-            order.addOrderLine(orderLine);
+            saveOrder.updateTotalPrice(orderLine.getTotalPrice());
         });
 
-        // Step 4: Order 저장
-        return orderRepository.save(order);
+        // saveOrder 저장
+        return orderRepository.save(saveOrder);
     }
 
     /**

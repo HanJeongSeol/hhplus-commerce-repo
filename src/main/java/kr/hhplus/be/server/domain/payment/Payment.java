@@ -40,6 +40,15 @@ public class Payment extends BaseEntity {
     @Comment("결제 상태")
     private PaymentStatus status;
 
+    public static Payment create(Long orderId, Long userId, Long paymentPrice) {
+        return Payment.builder()
+                .orderId(orderId)
+                .userId(userId)
+                .paymentPrice(paymentPrice)
+                .status(PaymentStatus.PENDING)
+                .build();
+    }
+
     /**
      * 결제 승인
      */

@@ -39,10 +39,7 @@ public class Order extends BaseEntity {
     @Comment("주문 상태")
     private OrderStatus status;
 
-    /**
-     * Order 객체 생성
-     */
-    public static Order createOrder(Long userId){
+    public static Order create(Long userId) {
         return Order.builder()
                 .userId(userId)
                 .status(OrderStatus.PENDING)
@@ -55,7 +52,7 @@ public class Order extends BaseEntity {
      */
     public void addOrderLine(OrderLine orderLine) {
         orderLine.assignOrder(this.orderId);
-        updateTotalPrice(orderLine.getTotalPrice());
+//        updateTotalPrice(orderLine.getTotalPrice());
     }
 
     /**

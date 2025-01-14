@@ -47,9 +47,9 @@ class OrderServiceTest {
                 new OrderLineProduct(2L, 1, 20000L)
         );
 
-        testOrder = Order.createOrder(testUserId);
-        testOrder.addOrderLine(OrderLine.createOrderLine(1L, 2, 10000L));
-        testOrder.addOrderLine(OrderLine.createOrderLine(2L, 1, 20000L));
+        testOrder = Order.create(testUserId);
+        testOrder.addOrderLine(OrderLine.createOrderLine(1L, 1L, 2, 10000L));
+        testOrder.addOrderLine(OrderLine.createOrderLine(1L, 2L, 1, 20000L));
 
         testOrderResult = new OrderResult(
                 1L,
@@ -85,7 +85,7 @@ class OrderServiceTest {
             assertThat(result.getUserId()).isEqualTo(testUserId);
             assertThat(result.getTotalPrice()).isEqualTo(40000L);
             assertThat(result.getStatus()).isEqualTo(OrderStatus.PENDING);
-            verify(orderRepository, times(1)).save(any(Order.class));
+            verify(orderRepository, times(2)).save(any(Order.class));
         }
 
         @Test

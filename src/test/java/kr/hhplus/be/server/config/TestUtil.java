@@ -31,19 +31,19 @@ public abstract class TestUtil {
     }
 
     public static Order createTestOrder() {
-        Order order = Order.createOrder(1L);
+        Order order = Order.create(1L);
         order.addOrderLine(createTestOrderLine());
         return order;
     }
 
     public static OrderLine createTestOrderLine() {
-        return OrderLine.createOrderLine(1L, 2, 10000L);
+        return OrderLine.createOrderLine(1L, 1L, 2, 10000L);
     }
 
     public static List<OrderLine> createTestOrderLines() {
         List<OrderLine> orderLines = new ArrayList<>();
-        orderLines.add(OrderLine.createOrderLine(1L, 2, 10000L));
-        orderLines.add(OrderLine.createOrderLine(2L, 1, 20000L));
+        orderLines.add(OrderLine.createOrderLine(1L, 1L, 2, 10000L));
+        orderLines.add(OrderLine.createOrderLine(1L, 2L, 1, 20000L));
         return orderLines;
     }
 } 
