@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.coupon.dto.CouponInfo;
 import kr.hhplus.be.server.support.constant.CouponStatus;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.exception.BusinessException;
@@ -18,7 +19,7 @@ public class CouponService {
      * 쿠폰 발급
      */
     @Transactional
-    public UserCoupon issueCoupon(Long userId, Long couponId) {
+    public CouponInfo.IssueUserCoupon issueCoupon(Long userId, Long couponId) {
         // 쿠폰 테이블 쿠폰 조회
         Coupon coupon = couponRepository.findByIdWithLock(couponId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
@@ -38,7 +39,7 @@ public class CouponService {
                 .status(CouponStatus.ACTIVE)
                 .build();
 
-        return couponRepository.save(userCoupon);
+        return CouponInfo.IssueUserCoupon.from(userCoupon, coupon);
     }
 
     /**
