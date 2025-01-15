@@ -4,8 +4,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.hhplus.be.server.domain.order.QOrder;
 import kr.hhplus.be.server.domain.order.QOrderLine;
-import kr.hhplus.be.server.domain.product.ProductPopularQueryDto;
 import kr.hhplus.be.server.domain.product.QProduct;
+import kr.hhplus.be.server.domain.product.dto.ProductInfo;
 import kr.hhplus.be.server.support.constant.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,12 +22,12 @@ public class ProductQueryDslRepositoryImpl implements ProductQueryDslRepository 
     private final QOrder order = QOrder.order;
 
     @Override
-    public List<ProductPopularQueryDto> findPopularProducts() {
+    public List<ProductInfo.ProductPopularQueryDto> findPopularProducts() {
         LocalDateTime endDate = LocalDateTime.now();
         LocalDateTime startDate = endDate.minusDays(3);
 
         return queryFactory
-                .select(Projections.constructor(ProductPopularQueryDto.class,
+                .select(Projections.constructor(ProductInfo.ProductPopularQueryDto.class,
                         product.productId,
                         product.name,
                         orderLine.count(),

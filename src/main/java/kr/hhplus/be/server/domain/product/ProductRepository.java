@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
+import kr.hhplus.be.server.domain.product.dto.ProductInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,5 +13,5 @@ public interface ProductRepository {
     Optional<Product> findById(Long productId);
     Optional<Product> findByIdWithLock(Long productId);
     Page<Product> findAll(Pageable pageable);
-    List<ProductPopularQueryDto> findPopularProducts();
+    List<ProductInfo.ProductPopularQueryDto> findPopularProducts();
 }

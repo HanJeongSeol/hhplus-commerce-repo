@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.infra.product;
 
 import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.domain.product.ProductPopularQueryDto;
 import kr.hhplus.be.server.domain.product.ProductRepository;
+import kr.hhplus.be.server.domain.product.dto.ProductInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +44,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<ProductPopularQueryDto> findPopularProducts() {
+    public List<ProductInfo.ProductPopularQueryDto> findPopularProducts() {
         return productQueryDslRepository.findPopularProducts();
     }
 }
