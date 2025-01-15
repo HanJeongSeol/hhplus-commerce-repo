@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.config.TestUtil;
+import kr.hhplus.be.server.domain.product.dto.ProductInfo;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.ProductStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,16 +60,33 @@ class ProductServiceTest {
         @DisplayName("상품 목록 조회 성공")
         void 상품_목록_조회시_전체_상품_목록을_반환() {
             // given
-            given(productRepository.findAll())
-                .willReturn(testProducts);
+            Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+            Page<Product> productPage = new PageImpl<>(testProducts, pageable, testProducts.size());
+            given(productRepository.findAll(any(Pageable.class)))
+                    .willReturn(productPage);
 
             // when
-            List<Product> result = productService.getAllProducts();
+            Page<ProductInfo.ProductDetail> result = productService.getAllProductPage(0, 10);
 
             // then
-            assertThat(result).hasSize(2);
-            assertThat(result.get(0).getName()).isEqualTo("항해 기념품");
-            assertThat(result.get(1).getName()).isEqualTo("항해 후드티");
+            assertThat(result.getContent()).hasSize(2);
+            assertThat(result.getContent().get(0).productName()).isEqualTo("항해 기념품");
+            assertThat(result.getContent().get(1).productName()).isEqualTo("항해 후드티");
+        }
+
+        @Test
+        @DisplayName("페이징된 상품 목록이 비어있을 경우 예외 발생")
+        void 페이징된_상품_목록이_비어있을경우_PRODUCT_NOT_FOUND_예외_발생() {
+            // given
+            Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+            Page<Product> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+            given(productRepository.findAll(any(Pageable.class)))
+                    .willReturn(emptyPage);
+
+            // when & then
+            assertThatThrownBy(() -> productService.getAllProductPage(0, 10))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
         }
     }
 
@@ -79,29 +98,29 @@ class ProductServiceTest {
         @DisplayName("상품 상세 조회 성공")
         void 상품_ID로_조회시_상품_정보를_반환() {
             // given
-            given(productRepository.findByIdWithLock(testProduct.getProductId()))
-                .willReturn(Optional.of(testProduct));
+            given(productRepository.findById(testProduct.getProductId()))
+                    .willReturn(Optional.of(testProduct));
 
             // when
-            Product result = productService.getProductByIdWithLock(testProduct.getProductId());
+            ProductInfo.ProductDetail result = productService.getProductByIdWithLock(testProduct.getProductId());
 
             // then
-            assertThat(result.getProductId()).isEqualTo(testProduct.getProductId());
-            assertThat(result.getName()).isEqualTo(testProduct.getName());
-            assertThat(result.getPrice()).isEqualTo(testProduct.getPrice());
+            assertThat(result.productId()).isEqualTo(testProduct.getProductId());
+            assertThat(result.productName()).isEqualTo(testProduct.getName());
+            assertThat(result.price()).isEqualTo(testProduct.getPrice());
         }
 
         @Test
         @DisplayName("존재하지 않는 상품 조회시 예외 발생")
         void 존재하지_않는_상품_ID로_조회시_예외가_발생한다() {
             // given
-            given(productRepository.findByIdWithLock(999L))
-                .willReturn(Optional.empty());
+            given(productRepository.findById(999L))
+                    .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> productService.getProductByIdWithLock(999L))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
         }
     }
 
