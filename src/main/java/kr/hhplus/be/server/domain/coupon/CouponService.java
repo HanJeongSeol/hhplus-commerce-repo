@@ -24,6 +24,8 @@ public class CouponService {
         Coupon coupon = couponRepository.findByIdWithLock(couponId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
 
+        System.out.println(couponId);
+
         // 사용자 중복 발급 확인
         if(couponRepository.findUserCoupon(userId, couponId).isPresent()){
             throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
@@ -38,6 +40,8 @@ public class CouponService {
                 .couponId(couponId)
                 .status(CouponStatus.ACTIVE)
                 .build();
+
+        couponRepository.save(userCoupon);
 
         return CouponInfo.IssueUserCoupon.from(userCoupon, coupon);
     }
@@ -77,7 +81,13 @@ public class CouponService {
      * 사용자 쿠폰 목록 조회
      */
     @Transactional
-    public List<UserCoupon> getUserCoupons(Long userId) {
-        return couponRepository.findUserCoupons(userId);
+    public List<CouponInfo.UserCouponInfo> getUserCoupons(Long userId) {
+        return couponRepository.findUserCoupons(userId).stream()
+                .map(userCoupon -> {
+                    Coupon coupon = couponRepository.findById(userCoupon.getCouponId())
+                            .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+                    return CouponInfo.UserCouponInfo.from(userCoupon, coupon);
+                })
+                .toList();
     }
 }

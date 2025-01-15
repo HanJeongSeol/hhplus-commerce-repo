@@ -26,4 +26,26 @@ public class CouponInfo {
             );
         }
     }
+
+    public record UserCouponInfo(
+            Long userCouponId,
+            String couponName,
+            Long discountPrice,
+            CouponStatus status,
+            LocalDateTime issuedAt,
+            LocalDateTime expiredAt,
+            LocalDateTime usedAt
+    ) {
+        public static UserCouponInfo from(UserCoupon userCoupon, Coupon coupon){
+            return new UserCouponInfo(
+                    userCoupon.getUserCouponId(),
+                    coupon.getName(),
+                    coupon.getDiscountPrice(),
+                    userCoupon.getStatus(),
+                    userCoupon.getCreatedAt(),
+                    coupon.getExpiredAt(),
+                    userCoupon.getUsedAt()
+            );
+        }
+    }
 }

@@ -12,7 +12,7 @@ import org.hibernate.annotations.Comment;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_coupons")
+@Table(name = "user_coupon")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
