@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.application.product.ProductFacade;
 import kr.hhplus.be.server.application.product.request.ProductCommand;
 import kr.hhplus.be.server.application.product.response.ProductResult;
-import kr.hhplus.be.server.interfaces.dto.product.ProductPopularResponse;
 import kr.hhplus.be.server.interfaces.dto.product.request.ProductRequest;
 import kr.hhplus.be.server.interfaces.dto.product.response.ProductResponse;
 import kr.hhplus.be.server.support.constant.SuccessCode;

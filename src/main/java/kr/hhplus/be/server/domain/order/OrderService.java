@@ -1,15 +1,14 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.application.order.OrderResult;
+import kr.hhplus.be.server.domain.order.dto.OrderInfo;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,50 +19,31 @@ public class OrderService {
      * 주문 생성
      */
     @Transactional
-    public Order createOrder(Long userId, List<OrderLineProduct> orderProducts){
+    public OrderInfo.OrderDetail createOrder(Long userId, List<OrderInfo.OrderLineProduct> orderProducts){
         validateOrderProducts(orderProducts);
 
         // Order 생성
         Order order = Order.create(userId);
         Order saveOrder = orderRepository.save(order);  // orderId 생성 위해 먼저 저장
 
-        // OrderLine 추가
-        orderProducts.forEach(product -> {
-            OrderLine orderLine = OrderLine.createOrderLine(
-                    saveOrder.getOrderId(),
-                    product.productId(),
-                    product.quantity(),
-                    product.price()
-            );
-            saveOrder.updateTotalPrice(orderLine.getTotalPrice());
-        });
+        List<OrderLine> orderLines = orderProducts.stream()
+                .map(product -> OrderLine.createOrderLine(
+                        saveOrder.getOrderId(),
+                        product.productId(),
+                        product.quantity(),
+                        product.price()
+                )).collect(Collectors.toList());
+
+        List<OrderLine> saveOrderLines = orderRepository.saveAll(orderLines);
+
+        // 총 주문 금액 업데이트
+        Long totalPrice = saveOrderLines.stream()
+                .mapToLong(OrderLine::getTotalPrice)
+                .sum();
+        saveOrder.updateTotalPrice(totalPrice);
 
         // saveOrder 저장
-        return orderRepository.save(saveOrder);
-    }
-
-    /**
-     * 주문 조회
-     */
-    @Transactional
-    public OrderResult getOrder(Long orderId){
-        return orderRepository.findByIdWithLines(orderId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
-    }
-
-    /**
-     * 주문 목록 조회
-     */
-    public List<OrderResult> getUserOrders(Long userId) {
-        return orderRepository.findByUserIdWithLines(userId);
-    }
-
-    /**
-     * 주문 목록 조회 페이징
-     */
-    @Transactional(readOnly = true)
-    public Page<OrderResult> getUserOrders(Long userId, Pageable pageable) {
-        return orderRepository.findByUserIdWithLines(userId, pageable);
+        return OrderInfo.OrderDetail.from(saveOrder, saveOrderLines);
     }
 
     /**
@@ -88,7 +68,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    private void validateOrderProducts(List<OrderLineProduct> orderProducts) {
+    private void validateOrderProducts(List<OrderInfo.OrderLineProduct> orderProducts) {
         if (orderProducts == null || orderProducts.isEmpty()) {
             throw new BusinessException(ErrorCode.INVALID_ORDER_REQUEST);
         }

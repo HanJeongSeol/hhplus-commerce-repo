@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.application.order.OrderLineResult;
-import kr.hhplus.be.server.application.order.OrderResult;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.OrderStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
@@ -36,30 +34,30 @@ class OrderServiceTest {
 
     private Long testUserId;
     private Order testOrder;
-    private List<OrderLineProduct> testOrderProducts;
-    private OrderResult testOrderResult;
+    private List<OrderLineProductV1> testOrderProducts;
+    private OrderResultV1 testOrderResult;
 
     @BeforeEach
     void setUp() {
         testUserId = 1L;
         testOrderProducts = List.of(
-                new OrderLineProduct(1L, 2, 10000L),
-                new OrderLineProduct(2L, 1, 20000L)
+                new OrderLineProductV1(1L, 2, 10000L),
+                new OrderLineProductV1(2L, 1, 20000L)
         );
 
         testOrder = Order.create(testUserId);
         testOrder.addOrderLine(OrderLine.createOrderLine(1L, 1L, 2, 10000L));
         testOrder.addOrderLine(OrderLine.createOrderLine(1L, 2L, 1, 20000L));
 
-        testOrderResult = new OrderResult(
+        testOrderResult = new OrderResultV1(
                 1L,
                 testUserId,
                 OrderStatus.PENDING,
                 40000L,
                 LocalDateTime.now(),
                 List.of(
-                        new OrderLineResult(1L, testOrder.getOrderId(), 1L, 2, 20000L),
-                        new OrderLineResult(2L, testOrder.getOrderId(), 2L, 1, 20000L)
+                        new OrderLineResultV1(1L, testOrder.getOrderId(), 1L, 2, 20000L),
+                        new OrderLineResultV1(2L, testOrder.getOrderId(), 2L, 1, 20000L)
                 )
         );
     }
@@ -100,7 +98,7 @@ class OrderServiceTest {
         @DisplayName("주문 수량이 0이나 음수인 경우 예외 발생")
         void 주문_수량이_0_이하면_INVALID_ORDER_QUANTITY_예외_발생() {
             // given
-            OrderLineProduct invalidProduct = OrderLineProduct.of(10L, 0, 10000L);
+            OrderLineProductV1 invalidProduct = OrderLineProductV1.of(10L, 0, 10000L);
 
             // when & then
             assertThatThrownBy(() -> orderService.createOrder(testUserId, List.of(invalidProduct)))
@@ -112,7 +110,7 @@ class OrderServiceTest {
         @DisplayName("주문 가격이 0이나 음수인 경우 예외 발생")
         void 주문_가격이_0_이하면_INVALID_PRODUCT_PRICE_예외_발생() {
             // given
-            OrderLineProduct invalidProduct = OrderLineProduct.of(1L, 1, 0L);
+            OrderLineProductV1 invalidProduct = OrderLineProductV1.of(1L, 1, 0L);
 
             // when & then
             assertThatThrownBy(() -> orderService.createOrder(testUserId, List.of(invalidProduct)))
@@ -132,7 +130,7 @@ class OrderServiceTest {
                     .willReturn(Optional.of(testOrderResult));
 
             // when
-            OrderResult result = orderService.getOrder(1L);
+            OrderResultV1 result = orderService.getOrder(1L);
 
             // then
             assertThat(result).isNotNull();
@@ -160,12 +158,12 @@ class OrderServiceTest {
         @DisplayName("사용자 주문 목록 조회 성공")
         void userId가_주어지면_사용자_주문목록_반환() {
             // given
-            List<OrderResult> orderResults = List.of(testOrderResult);
+            List<OrderResultV1> orderResults = List.of(testOrderResult);
             given(orderRepository.findByUserIdWithLines(testUserId))
                     .willReturn(orderResults);
 
             // when
-            List<OrderResult> results = orderService.getUserOrders(testUserId);
+            List<OrderResultV1> results = orderService.getUserOrders(testUserId);
 
             // then
             assertThat(results).hasSize(1);
