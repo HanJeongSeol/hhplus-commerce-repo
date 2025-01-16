@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.payment;
 
+import kr.hhplus.be.server.domain.payment.dto.PaymentInfo;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.PaymentStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
@@ -20,8 +21,12 @@ public class PaymentService {
      * 결제 생성
      */
     @Transactional
-    public Payment createPayment(Long orderId, Long userId, Long paymentPrice) {
-        Payment payment = Payment.create(orderId, userId, paymentPrice);
+    public Payment createPayment(Long orderId, Long userId, Long totalAmount, Long discountAmount) {
+        // 최종 결제 금액 계산
+        Long finalAmount = totalAmount - (discountAmount != null ? discountAmount : 0);
+
+        // 결제 엔티티 생성
+        Payment payment = Payment.create(orderId, userId, finalAmount);
 
         return paymentRepository.save(payment);
     }

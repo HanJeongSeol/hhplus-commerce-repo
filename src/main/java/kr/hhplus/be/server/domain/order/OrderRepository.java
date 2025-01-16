@@ -7,4 +7,7 @@ public interface OrderRepository {
     Order save(Order order);
     List<OrderLine> saveAll(List<OrderLine> orderLines);
     Optional<Order> findById(Long orderId);
+
+    List<OrderLine> findByOrderLineId(Long orderId);
+
 }

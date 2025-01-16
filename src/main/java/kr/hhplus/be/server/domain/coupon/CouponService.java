@@ -67,6 +67,14 @@ public class CouponService {
         return userCoupon;
     }
 
+    public void userCouponCheck(Long userId, Long couponId){
+        // 사용자 쿠폰 및 쿠폰 존재 확인
+        UserCoupon userCoupon = couponRepository.findUserCoupon(userId, couponId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+        if(!userCoupon.isAvailable()){
+           throw new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE);
+        }
+    }
     /**
      * 쿠폰 상세 조회
      */

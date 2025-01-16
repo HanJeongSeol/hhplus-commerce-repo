@@ -46,6 +46,18 @@ public class OrderService {
         return OrderInfo.OrderDetail.from(saveOrder, saveOrderLines);
     }
 
+    public Order getOrder(Long orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+        return order;
+    }
+
+    public List<OrderLine> getOrderLine(Long orderId){
+        List<OrderLine> orderLineList = orderRepository.findByOrderLineId(orderId);
+        return orderLineList;
+    }
+
     /**
      * 주문 완료
      */
