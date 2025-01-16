@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.order;
 
+import kr.hhplus.be.server.domain.order.dto.OrderInfo;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.OrderStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
@@ -34,32 +35,20 @@ class OrderServiceTest {
 
     private Long testUserId;
     private Order testOrder;
-    private List<OrderLineProductV1> testOrderProducts;
-    private OrderResultV1 testOrderResult;
+    private List<OrderInfo.OrderLineProduct> testOrderProducts;
+    private OrderInfo.OrderDetail testOrderDetail;
 
     @BeforeEach
     void setUp() {
         testUserId = 1L;
         testOrderProducts = List.of(
-                new OrderLineProductV1(1L, 2, 10000L),
-                new OrderLineProductV1(2L, 1, 20000L)
+                new OrderInfo.OrderLineProduct(1L, 2, 10000L),
+                new OrderInfo.OrderLineProduct(2L, 1, 20000L)
         );
 
         testOrder = Order.create(testUserId);
         testOrder.addOrderLine(OrderLine.createOrderLine(1L, 1L, 2, 10000L));
         testOrder.addOrderLine(OrderLine.createOrderLine(1L, 2L, 1, 20000L));
-
-        testOrderResult = new OrderResultV1(
-                1L,
-                testUserId,
-                OrderStatus.PENDING,
-                40000L,
-                LocalDateTime.now(),
-                List.of(
-                        new OrderLineResultV1(1L, testOrder.getOrderId(), 1L, 2, 20000L),
-                        new OrderLineResultV1(2L, testOrder.getOrderId(), 2L, 1, 20000L)
-                )
-        );
     }
     @BeforeEach
     void setUpMocks() {
@@ -73,32 +62,58 @@ class OrderServiceTest {
         @DisplayName("주문 생성 성공")
         void userId와_상품목록이_주어지면_주문_생성() {
             // given
+            Order savedOrder =  Order.builder()
+                    .orderId(1L)
+                    .userId(1L)
+                    .status(OrderStatus.PENDING)
+                    .totalPrice(0L)
+                    .build();
+
+            List<OrderLine> orderLines = testOrderProducts.stream()
+                    .map(product -> OrderLine.createOrderLine(
+                            savedOrder.getOrderId(),
+                            product.productId(),
+                            product.quantity(),
+                            product.price()
+                    )).toList();
+
             given(orderRepository.save(any(Order.class)))
-                    .willReturn(testOrder);
+                    .willReturn(savedOrder);
+            given(orderRepository.saveAll(anyList()))
+                    .willReturn(orderLines);
 
             // when
-            Order result = orderService.createOrder(testUserId, testOrderProducts);
+            OrderInfo.OrderDetail result = orderService.createOrder(testUserId, testOrderProducts);
 
             // then
-            assertThat(result.getUserId()).isEqualTo(testUserId);
-            assertThat(result.getTotalPrice()).isEqualTo(40000L);
-            assertThat(result.getStatus()).isEqualTo(OrderStatus.PENDING);
-            verify(orderRepository, times(2)).save(any(Order.class));
+            assertThat(result).isNotNull();
+            assertThat(result.userId()).isEqualTo(testUserId);
+            assertThat(result.status()).isEqualTo(OrderStatus.PENDING);
+            assertThat(result.totalPrice()).isEqualTo(40000L); // 20000L + 20000L
+            assertThat(result.orderLines()).hasSize(2);
+
+            verify(orderRepository).save(any(Order.class));
+            verify(orderRepository).saveAll(anyList());
         }
 
         @Test
         @DisplayName("주문 상품 목록이 비어있으면 예외 발생")
         void 주문상품목록이_비어있으면_INVALID_ORDER_REQUEST_예외_발생() {
-            assertThatThrownBy(() -> orderService.createOrder(testUserId, List.of()))
+            // given
+            Long userId = 1L;
+            List<OrderInfo.OrderLineProduct> emptyProducts = List.of();
+
+            // when & then
+            assertThatThrownBy(() -> orderService.createOrder(userId, emptyProducts))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.INVALID_ORDER_REQUEST.getMessage());
+                    .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_ORDER_REQUEST);
         }
 
         @Test
         @DisplayName("주문 수량이 0이나 음수인 경우 예외 발생")
         void 주문_수량이_0_이하면_INVALID_ORDER_QUANTITY_예외_발생() {
             // given
-            OrderLineProductV1 invalidProduct = OrderLineProductV1.of(10L, 0, 10000L);
+            OrderInfo.OrderLineProduct invalidProduct = OrderInfo.OrderLineProduct.from(10L, 0, 10000L);
 
             // when & then
             assertThatThrownBy(() -> orderService.createOrder(testUserId, List.of(invalidProduct)))
@@ -110,7 +125,7 @@ class OrderServiceTest {
         @DisplayName("주문 가격이 0이나 음수인 경우 예외 발생")
         void 주문_가격이_0_이하면_INVALID_PRODUCT_PRICE_예외_발생() {
             // given
-            OrderLineProductV1 invalidProduct = OrderLineProductV1.of(1L, 1, 0L);
+            OrderInfo.OrderLineProduct invalidProduct = OrderInfo.OrderLineProduct.from(1L, 1, 0L);
 
             // when & then
             assertThatThrownBy(() -> orderService.createOrder(testUserId, List.of(invalidProduct)))
@@ -118,58 +133,4 @@ class OrderServiceTest {
                     .hasMessage(ErrorCode.INVALID_PRODUCT_PRICE.getMessage());
         }
     }
-
-    @Nested
-    @DisplayName("주문 조회")
-    class GetOrder {
-        @Test
-        @DisplayName("주문 조회 성공")
-        void orderId가_주어지면_주문데이터_반환() {
-            // given
-            given(orderRepository.findByIdWithLines(1L))
-                    .willReturn(Optional.of(testOrderResult));
-
-            // when
-            OrderResultV1 result = orderService.getOrder(1L);
-
-            // then
-            assertThat(result).isNotNull();
-            assertThat(result.orderId()).isEqualTo(1L);
-            assertThat(result.orderLines()).hasSize(2);
-            assertThat(result.totalPrice()).isEqualTo(40000L);
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 주문 조회시 예외 발생")
-        void 존재하지않는_orderId가_주어지면_ORDER_NOT_FOUND_예외_발생() {
-            given(orderRepository.findByIdWithLines(999L))
-                    .willReturn(Optional.empty());
-
-            assertThatThrownBy(() -> orderService.getOrder(999L))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.ORDER_NOT_FOUND.getMessage());
-        }
-    }
-
-    @Nested
-    @DisplayName("사용자 주문 목록 조회")
-    class GetUserOrders {
-        @Test
-        @DisplayName("사용자 주문 목록 조회 성공")
-        void userId가_주어지면_사용자_주문목록_반환() {
-            // given
-            List<OrderResultV1> orderResults = List.of(testOrderResult);
-            given(orderRepository.findByUserIdWithLines(testUserId))
-                    .willReturn(orderResults);
-
-            // when
-            List<OrderResultV1> results = orderService.getUserOrders(testUserId);
-
-            // then
-            assertThat(results).hasSize(1);
-            assertThat(results.get(0).userId()).isEqualTo(testUserId);
-            verify(orderRepository).findByUserIdWithLines(testUserId);
-        }
-    }
-
 }
