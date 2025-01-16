@@ -35,9 +35,11 @@ springdoc:
 
 logging:
   level:
-    root: INFO
-    org.springframework: INFO
-    kr.hhplus: INFO
+    root: WARN
+    org.springframework: WARN
+    kr.hhplus: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [method=%X{method} uri=%X{uri} requestId=%X{requestId}] %msg%n"
 
 ---
 spring.config.activate.on-profile: local, test

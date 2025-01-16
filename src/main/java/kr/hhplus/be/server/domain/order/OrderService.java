@@ -48,7 +48,7 @@ public class OrderService {
 
     public Order getOrder(Long orderId){
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND,orderId));
 
         return order;
     }
