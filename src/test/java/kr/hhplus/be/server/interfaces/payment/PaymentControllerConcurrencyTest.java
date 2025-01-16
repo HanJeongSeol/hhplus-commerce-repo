@@ -97,7 +97,7 @@ public class PaymentControllerConcurrencyTest {
 
     @Test
     @DisplayName("[POST] /api/v1/payments - 동시성 결제 요청 테스트")
-    void concurrentProcessPaymentTest() throws Exception {
+    void 여러스레드_동시_결제_요청() throws Exception {
         // given
         PaymentRequest.PaymentProcessingRequest request = new PaymentRequest.PaymentProcessingRequest(
                 testOrderId,
@@ -143,7 +143,7 @@ public class PaymentControllerConcurrencyTest {
 
     @Test
     @DisplayName("[Concurrent] 결제 및 상품 조회 동시 요청 테스트")
-    void concurrentPaymentAndProductRetrievalTest() throws Exception {
+    void 결제_상품조회_동시_요청시_결제_완료후_감소된_재고가_조회된다() throws Exception {
         int paymentThreadCount = 1;
         int retrievalThreadCount = 5;
         int totalThreads = paymentThreadCount + retrievalThreadCount;
