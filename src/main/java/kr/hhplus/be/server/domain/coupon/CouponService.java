@@ -22,7 +22,7 @@ public class CouponService {
     public CouponInfo.IssueUserCoupon issueCoupon(Long userId, Long couponId) {
         // 쿠폰 테이블 쿠폰 조회
         Coupon coupon = couponRepository.findByIdWithLock(couponId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND,couponId));
 
         System.out.println("Coupon: " + coupon.getCouponId());
 
@@ -56,7 +56,7 @@ public class CouponService {
     public UserCoupon useCoupon(Long userId, Long couponId) {
         // 사용자 쿠폰 및 쿠폰 존재 확인
         UserCoupon userCoupon = couponRepository.findUserCoupon(userId, couponId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND,couponId));
 
         Coupon coupon = getCoupon(couponId);
 
@@ -73,9 +73,9 @@ public class CouponService {
     public void userCouponCheck(Long userId, Long couponId){
         // 사용자 쿠폰 및 쿠폰 존재 확인
         UserCoupon userCoupon = couponRepository.findUserCoupon(userId, couponId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND,couponId));
         if(!userCoupon.isAvailable()){
-           throw new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE);
+           throw new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE, couponId);
         }
     }
     /**
@@ -84,7 +84,7 @@ public class CouponService {
     @Transactional
     public Coupon getCoupon(Long couponId){
         return couponRepository.findById(couponId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND,couponId));
 
     }
 
@@ -96,7 +96,7 @@ public class CouponService {
         return couponRepository.findUserCoupons(userId).stream()
                 .map(userCoupon -> {
                     Coupon coupon = couponRepository.findById(userCoupon.getCouponId())
-                            .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+                            .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND,userCoupon.getUserCouponId()));
                     return CouponInfo.UserCouponInfo.from(userCoupon, coupon);
                 })
                 .toList();

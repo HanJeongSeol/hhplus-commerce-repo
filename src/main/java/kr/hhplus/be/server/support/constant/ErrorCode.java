@@ -40,7 +40,7 @@ public enum ErrorCode {
 
     // 결제 에러 코드
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND,  "결제 정보를 찾을 수 없습니다", "paymentId : [%d]"),
-    PAYMENT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST,  "이미 결제가 완료된 주문입니다", "paymentId : [%d]"),
+    PAYMENT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST,  "이미 결제가 완료된 주문입니다", "orderId : [%d]"),
     PAYMENT_CANCELLED(HttpStatus.BAD_REQUEST, "취소된 결제입니다", "paymentId : [%d]"),
 
     // 사용자 에러 코드

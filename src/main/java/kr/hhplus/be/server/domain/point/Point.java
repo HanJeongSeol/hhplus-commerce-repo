@@ -53,7 +53,7 @@ public class Point extends BaseEntity {
 
     private void validateChargeAmount(Long amount){
         if(amount <= 0 ){
-            throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT);
+            throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT, amount);
         }
         if (this.balance + amount > MAX_POINT_AMOUNT){
             throw new BusinessException(ErrorCode.POINT_EXCEED_MAX_VALUE);
@@ -62,7 +62,7 @@ public class Point extends BaseEntity {
 
     private void validateUseAmount(Long amount){
         if(amount <=0){
-            throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT);
+            throw new BusinessException(ErrorCode.INVALID_POINT_AMOUNT, amount);
         }
         if(this.balance < amount){
             throw new BusinessException(ErrorCode.INSUFFICIENT_POINT_BALANCE);

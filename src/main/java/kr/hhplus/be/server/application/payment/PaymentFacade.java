@@ -32,7 +32,7 @@ public class PaymentFacade {
         // 1. 주문 정보 조회 및 검증
         var order = orderService.getOrder(command.orderId());
         if(OrderStatus.COMPLETED.equals(order.getStatus())){
-            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED, command.orderId());
         }
         // 2. 주문 상세 정보 조회
         var orderLine = orderService.getOrderLine(command.orderId());

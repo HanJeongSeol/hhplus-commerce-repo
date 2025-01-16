@@ -37,7 +37,7 @@ public class PaymentService {
     @Transactional
     public Payment approvePayment(Long paymentId) {
         Payment payment = paymentRepository.findByIdWithLock(paymentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND, paymentId));
 
         payment.approve();
         return paymentRepository.save(payment);
@@ -48,7 +48,7 @@ public class PaymentService {
      */
     public Payment getPayment(Long paymentId) {
         return paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND, paymentId));
     }
 
     /**
@@ -56,7 +56,7 @@ public class PaymentService {
      */
     public Payment getPaymentByOrder(Long orderId) {
         return paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND, orderId));
     }
 
     /**

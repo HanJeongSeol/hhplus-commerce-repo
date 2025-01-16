@@ -48,7 +48,7 @@ public class ProductService {
     public ProductInfo.ProductDetail getProductById(Long productId){
 
         Product product =  productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND,productId));
 
         return ProductInfo.ProductDetail.from(product);
     }
@@ -59,7 +59,7 @@ public class ProductService {
     @Transactional
     public ProductInfo.ProductDetail getProductByIdWithLock(Long productId){
         Product product =  productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND,productId));
 
         return ProductInfo.ProductDetail.from(product);
     }
@@ -67,7 +67,7 @@ public class ProductService {
     @Transactional
     public void decreaseProductStock(Long productId, int quantity){
         Product product = productRepository.findByIdWithLock(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND,productId));
 
         product.decreaseStock(quantity);
 

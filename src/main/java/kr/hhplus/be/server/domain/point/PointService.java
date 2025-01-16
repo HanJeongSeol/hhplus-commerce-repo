@@ -15,7 +15,7 @@ public class PointService {
     @Transactional
     public Point chargePoint(Long userId, Long amount){
         Point point = pointRepository.findByUserWithLock(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_POINT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_POINT_NOT_FOUND, userId));
 
         point.charge(amount);
         return pointRepository.save(point);
@@ -24,13 +24,13 @@ public class PointService {
     @Transactional
     public Point getPoint(Long userId){
         return pointRepository.findByUserWithLock(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_POINT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_POINT_NOT_FOUND, userId));
     }
 
     @Transactional
     public Point usePoint(Long userId, Long amount){
         Point point = pointRepository.findByUserWithLock(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_POINT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_POINT_NOT_FOUND, userId));
 
         point.use(amount);
         return pointRepository.save(point);

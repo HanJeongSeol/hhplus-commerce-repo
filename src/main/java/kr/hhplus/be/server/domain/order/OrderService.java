@@ -64,7 +64,7 @@ public class OrderService {
     @Transactional
     public Order completeOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND,orderId));
         order.complete();
         return orderRepository.save(order);
     }
@@ -75,7 +75,7 @@ public class OrderService {
     @Transactional
     public Order cancelOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND,orderId));
         order.cancel();
         return orderRepository.save(order);
     }
