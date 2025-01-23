@@ -1,0 +1,11 @@
+singleServerConfig:
+  address: "redis://localhost:6379"   # Redis 호스트 주소
+  password: null                     # 비밀번호 (설정 안했음)
+  connectionPoolSize: 64             # 커넥션 풀 크기
+  connectionMinimumIdleSize: 24      # 최소 유휴 커넥션 개수
+  idleConnectionTimeout: 10000       # 유휴 커넥션 타임아웃 (ms)
+  connectTimeout: 5000               # Redis 연결 타임아웃 (ms)
+  timeout: 3000                      # 명령 실행 타임아웃 (ms)
+  retryAttempts: 3                   # 재시도 횟수
+  retryInterval: 1500                # 재시도 간격 (ms)
+  subscriptionConnectionPoolSize: 50  # 추가 (pub/sub을 위한 설정)

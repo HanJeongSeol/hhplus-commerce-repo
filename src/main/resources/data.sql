@@ -13,7 +13,7 @@ VALUES
 -- 3. Product 애그리거트
 INSERT INTO product (product_id, name, price, stock, status, created_at, updated_at)
 VALUES
-    (1, '항해 후드티', 35000, 100, 'ON_SALE', NOW(), NOW()),
+    (1, '항해 후드티', 1, 10000, 'ON_SALE', NOW(), NOW()),
     (2, '항해 티셔츠', 25000, 100, 'ON_SALE', NOW(), NOW()),
     (3, '항해 무지노트', 3000, 100, 'ON_SALE', NOW(), NOW()),
     (4, '항해 볼펜', 1000, 100, 'ON_SALE', NOW(), NOW()),
@@ -22,7 +22,7 @@ VALUES
     (7, '항해 마우스패드', 8000, 100, 'ON_SALE', NOW(), NOW()),
     (8, '항해 텀블러', 15000, 100, 'ON_SALE', NOW(), NOW()),
     (9, '항해 백팩', 45000, 100, 'ON_SALE', NOW(), NOW()),
-    (10, '항해 모자', 20000, 100, 'ON_SALE', NOW(), NOW());
+    (10, '항해 모자', 1, 100, 'ON_SALE', NOW(), NOW());
 
 -- 4. Coupon 애그리거트
 -- 4-1. Coupon

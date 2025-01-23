@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: hhplus
   profiles:
     active: local
   datasource:
@@ -35,9 +33,9 @@ springdoc:
 
 logging:
   level:
-    root: WARN
-    org.springframework: WARN
-    kr.hhplus: WARN
+    root: INFO
+    org.springframework: INFO
+    kr.hhplus: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [method=%X{method} uri=%X{uri} requestId=%X{requestId}] %msg%n"
 
@@ -53,4 +51,5 @@ spring:
     url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
     username: application
     password: application
+
 

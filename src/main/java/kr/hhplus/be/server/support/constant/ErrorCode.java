@@ -21,6 +21,7 @@ public enum ErrorCode {
     // 상품 에러 코드
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다", "productId : [%d]"),
     PRODUCT_OUT_OF_STOCK(HttpStatus.BAD_REQUEST,  "상품이 품절되었습니다", "productId : [%d]"),
+    PRODUCT_LOCK_ACQUISITION_FAILED(HttpStatus.BAD_REQUEST, "재고 감소 처리 중 락 획득에 실패했습니다.",null),
 
 
     // 쿠폰 에러 코드

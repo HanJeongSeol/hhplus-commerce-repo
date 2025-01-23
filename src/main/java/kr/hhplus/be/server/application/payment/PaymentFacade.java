@@ -2,6 +2,7 @@ package kr.hhplus.be.server.application.payment;
 
 import kr.hhplus.be.server.application.payment.request.PaymentCommand;
 import kr.hhplus.be.server.application.payment.response.PaymentResult;
+import kr.hhplus.be.server.config.redis.annotation.RedissonLock;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.payment.Payment;
@@ -13,12 +14,15 @@ import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.OrderStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentFacade {
     private final PaymentService paymentService;
@@ -29,6 +33,7 @@ public class PaymentFacade {
 
     @Transactional
     public PaymentResult.PaymentProcessResult processPayment(PaymentCommand.ProcessPayment command) {
+
         // 1. 주문 정보 조회 및 검증
         var order = orderService.getOrder(command.orderId());
         if(OrderStatus.COMPLETED.equals(order.getStatus())){
@@ -41,6 +46,132 @@ public class PaymentFacade {
         orderLine.forEach(line ->{
             // 3-2 상품 재고 감소
             productService.decreaseProductStock(line.getProductId(), line.getQuantity());
+        });
+
+        // 4. 쿠폰 조회 및 검증
+        var coupon = command.userCouponId() != null ?
+                couponService.getCoupon(command.userCouponId()) : null;
+        if (command.userCouponId() != null) {
+            couponService.userCouponCheck(command.userId(), command.userCouponId());
+        }
+
+        // 5. 결제 생성
+        Payment payment = paymentService.createPayment(
+                command.orderId(),
+                command.userId(),
+                order.getTotalPrice(),
+                coupon != null ? coupon.getDiscountPrice() : null
+        );
+        // 6. 포인트 차감
+        var point = pointService.usePoint(command.userId(), payment.getPaymentPrice());
+
+        // 7. 쿠폰 사용
+        if (coupon != null) {
+            couponService.useCoupon(command.userId(), command.userCouponId());
+        }
+
+        // 8. 결제 승인
+        Payment approvedPayment = paymentService.approvePayment(payment.getPaymentId());
+
+        // 9. 주문 완료
+        orderService.completeOrder(command.orderId());
+
+        // 10. 결과 반환
+        var discountInfo = coupon != null ? new PaymentResult.DiscountInfo(
+                coupon.getCouponId(),
+                coupon.getName(),
+                coupon.getDiscountPrice(),
+                LocalDateTime.now()
+        ) : null;
+
+        return PaymentResult.PaymentProcessResult.of(
+                approvedPayment,
+                order.getTotalPrice(),
+                discountInfo,
+                payment.getPaymentPrice(),
+                point.getBalance()
+        );
+
+    }
+
+    @Transactional
+    public PaymentResult.PaymentProcessResult processPaymentByRedis(PaymentCommand.ProcessPayment command) {
+        // 1. 주문 정보 조회 및 검증
+        var order = orderService.getOrder(command.orderId());
+        if(OrderStatus.COMPLETED.equals(order.getStatus())){
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED, command.orderId());
+        }
+        // 2. 주문 상세 정보 조회
+        var orderLine = orderService.getOrderLine(command.orderId());
+
+        // 3. 재고 조회 후 재고 감소
+        orderLine.forEach(line ->{
+            // 3-2 상품 재고 감소
+            productService.decreaseProductStock(line.getProductId(), line.getQuantity());
+        });
+
+        // 4. 쿠폰 조회 및 검증
+        var coupon = command.userCouponId() != null ?
+                couponService.getCoupon(command.userCouponId()) : null;
+        if (command.userCouponId() != null) {
+            couponService.userCouponCheck(command.userId(), command.userCouponId());
+        }
+
+        // 5. 결제 생성
+        Payment payment = paymentService.createPayment(
+                command.orderId(),
+                command.userId(),
+                order.getTotalPrice(),
+                coupon != null ? coupon.getDiscountPrice() : null
+        );
+        // 6. 포인트 차감
+        var point = pointService.usePoint(command.userId(), payment.getPaymentPrice());
+
+        // 7. 쿠폰 사용
+        if (coupon != null) {
+            couponService.useCoupon(command.userId(), command.userCouponId());
+        }
+
+        // 8. 결제 승인
+        Payment approvedPayment = paymentService.approvePayment(payment.getPaymentId());
+
+        // 9. 주문 완료
+        orderService.completeOrder(command.orderId());
+
+        // 10. 결과 반환
+        var discountInfo = coupon != null ? new PaymentResult.DiscountInfo(
+                coupon.getCouponId(),
+                coupon.getName(),
+                coupon.getDiscountPrice(),
+                LocalDateTime.now()
+        ) : null;
+
+        return PaymentResult.PaymentProcessResult.of(
+                approvedPayment,
+                order.getTotalPrice(),
+                discountInfo,
+                payment.getPaymentPrice(),
+                point.getBalance()
+        );
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+//    @RedissonLock(value = "#command.orderLine[*].productId", waitTime = 10, leaseTime = 5)
+    public PaymentResult.PaymentProcessResult processPaymentByRedisAnnotation(PaymentCommand.ProcessPayment command) {
+        log.info("결제 파사드 주문 아이디 : {} ", command.orderId());
+        // 1. 주문 정보 조회 및 검증
+        var order = orderService.getOrder(command.orderId());
+        if(OrderStatus.COMPLETED.equals(order.getStatus())){
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED, command.orderId());
+        }
+        // 2. 주문 상세 정보 조회
+        var orderLine = orderService.getOrderLine(command.orderId());
+
+        // 3. 재고 조회 후 재고 감소
+        orderLine.forEach(line ->{
+            // 3-2 상품 재고 감소
+            productService.decreaseProductStockRedisByAnnotation(line.getProductId(), line.getQuantity());
         });
 
         // 4. 쿠폰 조회 및 검증

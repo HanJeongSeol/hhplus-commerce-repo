@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.application.product.ProductFacade;
 import kr.hhplus.be.server.application.product.request.ProductCommand;
 import kr.hhplus.be.server.application.product.response.ProductResult;
+import kr.hhplus.be.server.domain.product.ProductService;
 import kr.hhplus.be.server.interfaces.dto.product.request.ProductRequest;
 import kr.hhplus.be.server.interfaces.dto.product.response.ProductResponse;
 import kr.hhplus.be.server.support.constant.SuccessCode;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +26,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductFacade productFacade;
+    private final ProductService productService;
 
     @Operation(summary = "상품 목록 조회", description = "모든 상품 목록을 조회합니다.")
     @GetMapping
@@ -53,6 +56,19 @@ public class ProductController {
                 .toList();
 
         return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.PRODUCTS_FOUND, response));
+    }
+
+    /**
+     * 재고 감소 테스트를 위한 엔드포인트
+     */
+    @PostMapping("/decrease/dblock")
+    public void decreaseByDbLock() {
+        productService.decreaseProductStock(1L, 1);
+    }
+
+    @PostMapping("/decrease/redis/annotation")
+    public void decreaseByRedisAnnotation() {
+        productService.decreaseProductStockRedisByAnnotation(1L, 1);
     }
 }
 

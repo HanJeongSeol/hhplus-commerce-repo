@@ -50,6 +50,8 @@ dependencies {
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 	// queryDsl 끝
 
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("org.redisson:redisson-spring-boot-starter:3.27.0")
 
 	// Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -57,6 +59,9 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	// 테스트 코드 lombok 사용을 위한 의존성 추가
+	testCompileOnly("org.projectlombok:lombok:1.18.22")
+	testAnnotationProcessor("org.projectlombok:lombok")
 }
 
 tasks.withType<Test> {

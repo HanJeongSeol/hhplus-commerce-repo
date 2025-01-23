@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface ProductRepository {
     Product save(Product product);
+
     List<Product> findAll();
     Optional<Product> findById(Long productId);
     Optional<Product> findByIdWithLock(Long productId);
