@@ -47,6 +47,12 @@ public class Product extends BaseEntity {
         updateStatus();
     }
 
+    public void increaseStock(int quantity){
+        validateStockDecrease(quantity);
+        this.stock += quantity;
+        updateStatus();
+    }
+
     private void validateStockDecrease(int quantity){
         if(quantity <= 0){
             throw new BusinessException(ErrorCode.INVALID_ORDER_QUANTITY);

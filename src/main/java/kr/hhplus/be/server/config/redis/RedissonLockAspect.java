@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Aspect
 @Component
-@Order(1) // @Transactional보다 우선 실행되어야 한다. 락 획득 -> 트랜잭션 -> 로직 -> 커밋 -> 락 해제
+@Order(0) // @Transactional보다 우선 실행되어야 한다. 락 획득 -> 트랜잭션 -> 로직 -> 커밋 -> 락 해제
 @RequiredArgsConstructor
 public class RedissonLockAspect {
 

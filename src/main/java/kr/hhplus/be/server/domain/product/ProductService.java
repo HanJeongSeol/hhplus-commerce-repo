@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -133,11 +134,23 @@ public class ProductService {
 
 //    @Transactional
     @RedissonLock(value = "#productId")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void decreaseProductStockRedisByAnnotation(Long productId, int quantity) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_LOCK_ACQUISITION_FAILED,productId));
         log.info(">>> 재고 차감 로직 실행 productId={}, quantity={}", productId, quantity);
         product.decreaseStock(quantity);
+
+        productRepository.save(product);
+    }
+    // 예외 발생 시 보상 트랜잭션 재고 복원을 위한 작업
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void restoreStockNewTx(Long productId, int quantity){
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        // 재고 복원 (원복)
+        product.increaseStock(quantity);
 
         productRepository.save(product);
     }
