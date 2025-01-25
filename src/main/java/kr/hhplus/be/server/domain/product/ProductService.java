@@ -133,8 +133,8 @@ public class ProductService {
     }
 
 //    @Transactional
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @RedissonLock(value = "#productId")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void decreaseProductStockRedisByAnnotation(Long productId, int quantity) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_LOCK_ACQUISITION_FAILED,productId));
@@ -143,6 +143,8 @@ public class ProductService {
 
         productRepository.save(product);
     }
+
+
     // 예외 발생 시 보상 트랜잭션 재고 복원을 위한 작업
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void restoreStockNewTx(Long productId, int quantity){

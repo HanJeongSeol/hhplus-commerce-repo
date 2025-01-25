@@ -41,7 +41,7 @@ public class PaymentController {
     }
 
 
-    @Operation(summary = "결제 처리", description = "주문에 대한 결제를 처리합니다.")
+    @Operation(summary = "결제 처리", description = "레디스 분산 락 결제처리")
     @PostMapping("/redis")
     public ResponseEntity<CustomApiResponse<PaymentResponse.PaymentProcessingResponse>> processPaymentByRedisAnnotation(
             @RequestBody PaymentRequest.PaymentProcessingRequest request) {
