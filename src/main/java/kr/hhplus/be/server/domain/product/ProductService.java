@@ -132,6 +132,10 @@ public class ProductService {
         }
     }
 
+
+    /**
+     * 250125
+     */
 //    @Transactional
 //    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @RedissonLock(value = "#productId")

@@ -160,6 +160,9 @@ public class PaymentFacade {
 
     }
 
+    /**
+     * 250125
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public PaymentResult.PaymentProcessResult processPaymentByRedisAnnotation(PaymentCommand.ProcessPayment command) {
 

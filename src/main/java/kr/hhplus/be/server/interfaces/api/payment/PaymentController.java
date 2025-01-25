@@ -41,6 +41,9 @@ public class PaymentController {
     }
 
 
+    /**
+     * 2501225
+     */
     @Operation(summary = "결제 처리", description = "레디스 분산 락 결제처리")
     @PostMapping("/redis")
     public ResponseEntity<CustomApiResponse<PaymentResponse.PaymentProcessingResponse>> processPaymentByRedisAnnotation(
