@@ -24,7 +24,6 @@ public class CouponService {
         Coupon coupon = couponRepository.findByIdWithLock(couponId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND,couponId));
 
-        System.out.println("Coupon: " + coupon.getCouponId());
 
         // 사용자 중복 발급 확인
         if(couponRepository.findUserCoupon(userId, couponId).isPresent()){
@@ -41,10 +40,8 @@ public class CouponService {
                 .couponId(couponId)
                 .status(CouponStatus.ACTIVE)
                 .build();
-        System.out.println("UserCoupon before save: " + userCoupon.getUserCouponId());
 
         userCoupon = couponRepository.save(userCoupon);
-        System.out.println("UserCoupon after save: " + userCoupon.getUserCouponId());
 
         return CouponInfo.IssueUserCoupon.from(userCoupon, coupon);
     }
