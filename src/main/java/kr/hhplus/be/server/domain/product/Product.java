@@ -60,4 +60,6 @@ public class Product extends BaseEntity {
         this.status = (this.stock > 0)
                 ? ProductStatus.ON_SALE : ProductStatus.SOLD_OUT;
     }
+
+
 }
