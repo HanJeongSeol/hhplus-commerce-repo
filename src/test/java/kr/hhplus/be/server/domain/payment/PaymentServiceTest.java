@@ -138,14 +138,15 @@ class PaymentServiceTest {
         @Test
         @DisplayName("존재하지 않는 결제 승인 시도시 예외 발생")
         void 존재하지_않는_결제_승인시_PAYMENT_NOT_FOUND_예외발생() {
+            Long paymentId = 999L;
             // given
-            given(paymentRepository.findByIdWithLock(999L))
+            given(paymentRepository.findByIdWithLock(paymentId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> paymentService.approvePayment(999L))
+            assertThatThrownBy(() -> paymentService.approvePayment(paymentId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.PAYMENT_NOT_FOUND.getMessage());
+                    .hasMessage(ErrorCode.PAYMENT_NOT_FOUND.formatMessage(paymentId));
         }
     }
 

@@ -130,8 +130,8 @@ class PointServiceTest {
 
             // when & then
             assertThatThrownBy(() -> pointService.getPoint(userId))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.USER_POINT_NOT_FOUND.getMessage());
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage(ErrorCode.USER_POINT_NOT_FOUND.formatMessage(userId));
         }
     }
 } 
