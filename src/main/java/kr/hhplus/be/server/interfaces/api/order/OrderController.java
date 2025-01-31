@@ -37,31 +37,4 @@ public class OrderController {
         var response = OrderResponse.OrderInfoResponse.from(result);
         return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.ORDER_CREATED, response));
     }
-
-//    @Operation(summary = "주문 조회", description = "주문 정보를 조회합니다.")
-//    @GetMapping("/{orderId}")
-//    public ResponseEntity<CustomApiResponse<OrderResponseV1>> getOrder(
-//            @Parameter(description = "주문 ID", required = true)
-//            @PathVariable Long orderId) {
-//
-//        // Mock 응답 데이터 생성 (실제 구현 시에는 Facade 호출)
-//        OrderItemResponseV1 orderItem = new OrderItemResponseV1(
-//                1L,
-//                "항해 기념품",
-//                2,
-//                25000L,
-//                50000L
-//        );
-//
-//        OrderResponseV1 response = new OrderResponseV1(
-//                orderId,
-//                1L,
-//                OrderStatus.PENDING,
-//                LocalDateTime.now(),
-//                50000L,
-//                List.of(orderItem)
-//        );
-//
-//        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.ORDER_FOUND, response));
-//    }
 }

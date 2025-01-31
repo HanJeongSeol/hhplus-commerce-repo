@@ -40,32 +40,4 @@ public class PaymentController {
         return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.PAYMENT_COMPLETED, response));
     }
 
-//    @Operation(summary = "결제 정보 조회", description = "결제 정보를 조회합니다.")
-//    @GetMapping("/{paymentId}")
-//    public ResponseEntity<CustomApiResponse<PaymentResponse.PaymentProcessingResponse>> getPayment(
-//            @Parameter(description = "결제 ID", required = true)
-//            @PathVariable Long paymentId) {
-//
-//        // Mock 응답 데이터 생성 (실제 구현 시에는 Facade 호출)
-//        PaymentResponse.PaymentDiscountResponse discountInfo = new PaymentResponse.PaymentDiscountResponse(
-//                1L,
-//                "신규 가입 할인 쿠폰",
-//                5000L,
-//                LocalDateTime.now()
-//        );
-//
-//        PaymentResponse.PaymentProcessingResponse response = new PaymentResponse.PaymentProcessingResponse(
-//                paymentId,
-//                1L,
-//                1L,
-//                PaymentStatus.PAID,
-//                LocalDateTime.now(),
-//                50000L,
-//                discountInfo,
-//                45000L,
-//                105000L
-//        );
-//
-//        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.PAYMENT_FOUND, response));
-//    }
 }
