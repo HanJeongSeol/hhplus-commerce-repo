@@ -114,14 +114,15 @@ class ProductServiceTest {
         @Test
         @DisplayName("존재하지 않는 상품 조회시 예외 발생")
         void 존재하지_않는_상품_ID로_조회시_예외가_발생한다() {
+            Long productid = 999L ;
             // given
-            given(productRepository.findById(999L))
+            given(productRepository.findById(productid))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> productService.getProductByIdWithLock(999L))
+            assertThatThrownBy(() -> productService.getProductByIdWithLock(productid))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getMessage());
+                    .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.formatMessage(productid));
         }
     }
 
@@ -158,9 +159,9 @@ class ProductServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                productService.decreaseProductStock(testProduct.getProductId(), testProduct.getStock() + 1))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.PRODUCT_OUT_OF_STOCK.getMessage());
+                    productService.decreaseProductStock(testProduct.getProductId(), testProduct.getStock() + 1))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage(ErrorCode.PRODUCT_OUT_OF_STOCK.formatMessage(testProduct.getProductId()));
         }
 
         @Test
