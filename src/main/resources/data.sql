@@ -24,10 +24,33 @@ VALUES
     (9, '항해 백팩', 45000, 100, 'ON_SALE', NOW(), NOW()),
     (10, '항해 모자', 20000, 100, 'ON_SALE', NOW(), NOW());
 
--- 4. Coupon 애그리거트
--- 4-1. Coupon
-INSERT INTO coupon (coupon_id, name, discount_price, stock, expired_at, created_at, updated_at)
+-- 4. Order 애그리거트
+-- 4-1. Order
+INSERT INTO order_main (order_id, user_id, total_price, status, created_at, updated_at)
 VALUES
-    (1, '신규가입 할인쿠폰', 5000, 100, DATE_ADD(NOW(), INTERVAL 30 DAY), NOW(), NOW()),
-    (2, '여름방학 특별할인', 10000, 50, DATE_ADD(NOW(), INTERVAL 14 DAY), NOW(), NOW()),
-    (3, 'VIP 전용쿠폰', 20000, 10, DATE_ADD(NOW(), INTERVAL 7 DAY), NOW(), NOW());
+    (1, 1, 35000, 'COMPLETED', NOW(), NOW()),
+    (2, 2, 28000, 'COMPLETED', NOW(), NOW()),
+    (3, 1, 53000, 'COMPLETED', NOW(), NOW()),
+    (4, 2, 25000, 'COMPLETED', NOW(), NOW()),
+    (5, 1, 45000, 'COMPLETED', NOW(), NOW());
+
+-- 4-2. OrderLine
+INSERT INTO order_line (order_line_id, order_id, product_id, quantity, total_price, created_at, updated_at)
+VALUES
+    -- 항해 후드티 (3번 주문) - 35000원
+    (1, 1, 1, 1, 35000, NOW(), NOW()),
+    (2, 3, 1, 1, 35000, NOW(), NOW()),
+    (3, 5, 1, 1, 35000, NOW(), NOW()),
+
+    -- 항해 티셔츠 (2번 주문) - 25000원
+    (4, 2, 2, 1, 25000, NOW(), NOW()),
+    (5, 4, 2, 1, 25000, NOW(), NOW()),
+
+    -- 항해 무지노트 (4번 주문) - 3000원
+    (6, 1, 3, 1, 3000, NOW(), NOW()),
+    (7, 2, 3, 1, 3000, NOW(), NOW()),
+    (8, 3, 3, 1, 3000, NOW(), NOW()),
+    (9, 4, 3, 1, 3000, NOW(), NOW()),
+
+    -- 항해 백팩 (1번 주문) - 45000원
+    (10, 5, 9, 1, 45000, NOW(), NOW());
