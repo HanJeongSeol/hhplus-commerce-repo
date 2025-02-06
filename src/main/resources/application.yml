@@ -17,7 +17,7 @@ spring:
     defer-datasource-initialization: true
     show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
@@ -40,9 +40,9 @@ springdoc:
 
 logging:
   level:
-    root: WARN
-    org.springframework: WARN
-    kr.hhplus: WARN
+    root: INFO
+    org.springframework: INFO
+    kr.hhplus: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [method=%X{method} uri=%X{uri} requestId=%X{requestId}] %msg%n"
 
