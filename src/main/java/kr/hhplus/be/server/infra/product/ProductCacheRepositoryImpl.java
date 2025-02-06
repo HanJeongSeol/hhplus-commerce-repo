@@ -37,7 +37,7 @@ public class ProductCacheRepositoryImpl implements ProductCacheRepository {
                         CACHE_TTL,
                         TimeUnit.SECONDS
                 );
-                log.info("인기상품 목록이 없습니다.");s
+                log.info("인기상품 목록이 없습니다.");
                 return;
             }
 
