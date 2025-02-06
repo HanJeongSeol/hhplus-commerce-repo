@@ -35,4 +35,17 @@ public class RedisConfig {
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
     }
+
+    /**
+     * 재고 감소 시 순자 연산이 필요한 경우 사용 -> 기존 Jackson 직렬화 사용으로 인한 decrease() 문제 해결
+     * 모든 값에 대해 String 직렬화 진행
+     */
+    @Bean("redisNumericTemplate")
+    public RedisTemplate<String, String> redisNumericTemplate(){
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        return template;
+    }
 }

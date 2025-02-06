@@ -50,4 +50,16 @@ public class CouponController {
 
         return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.COUPONS_FOUND, response));
     }
+
+    @Operation(summary = "쿠폰 발급 요청", description = "비동기 쿠폰 발급 요청")
+    @PostMapping("/issue/async")
+    public ResponseEntity<CustomApiResponse<CouponResponse.IssueRequestResponse>> requestIssueCoupon(
+            @RequestBody CouponRequest.IssueRequest request) {
+        CouponResult.IssueRequestResult result =
+                couponFacade.requestCouponIssue(CouponCommand.IssueCoupon.from(request));
+        return ResponseEntity.ok(CustomApiResponse.of(
+                SuccessCode.COUPON_ISSUED,
+                CouponResponse.IssueRequestResponse.toResponse(result)
+        ));
+    }
 }
