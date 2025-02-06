@@ -18,7 +18,7 @@ public class ProductFacade {
     /**
      * 페이징 처리된 상품 목록 리스트
      */
-    public Page<ProductResult.ProductInfoResult> getProductPage(ProductCommand.GetProductList command){
+    public Page<ProductResult.ProductInfoResult> getProductPage(ProductCommand.GetProductList command) {
         return productService.getAllProductPage(command.page(), command.size())
                 .map(ProductResult.ProductInfoResult::from);
     }
@@ -26,15 +26,23 @@ public class ProductFacade {
     /**
      * 단일 상품 상세 정보 조히
      */
-    public ProductResult.ProductInfoResult getProduct(ProductCommand.GetProduct command){
+    public ProductResult.ProductInfoResult getProduct(ProductCommand.GetProduct command) {
         return ProductResult.ProductInfoResult
                 .from(productService.getProductByIdWithLock(command.productId()));
     }
 
-    public List<ProductResult.ProductPopularResult> getProductPopularList(){
+    public List<ProductResult.ProductPopularResult> getProductPopularList() {
         return productService.getPopularProducts().stream()
                 .map(ProductResult.ProductPopularResult::from)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 레디스 캐시를 활용한 인기 상품 조회
+     */
+    public List<ProductResult.ProductPopularResult> getProductPopularListByRedis() {
+        return productService.getPopularProductsByRedis();
+
     }
 
 }
