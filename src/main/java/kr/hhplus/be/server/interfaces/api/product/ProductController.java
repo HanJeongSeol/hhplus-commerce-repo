@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Tag(name ="products", description = "상품 API")
 @RestController
 @RequiredArgsConstructor
@@ -52,6 +54,16 @@ public class ProductController {
                 .map(ProductResponse.ProductPopularResponse::toResponse)
                 .toList();
 
+        return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.PRODUCTS_FOUND, response));
+    }
+
+    @Operation(summary = "인기 상품 목록 조회_레디스 캐시 활용", description = "특정 기간의 인기 상품 목록을 조회합니다.")
+    @GetMapping("/redis/popular")
+    public ResponseEntity<CustomApiResponse<List<ProductResponse.ProductPopularResponse>>> getPopularProductsByRedis() {
+        List<ProductResult.ProductPopularResult> results = productFacade.getProductPopularListByRedis();
+        List<ProductResponse.ProductPopularResponse> response = results.stream()
+                .map(ProductResponse.ProductPopularResponse::toResponse)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(CustomApiResponse.of(SuccessCode.PRODUCTS_FOUND, response));
     }
 }

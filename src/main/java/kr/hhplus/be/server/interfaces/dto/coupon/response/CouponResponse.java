@@ -67,4 +67,15 @@ public class CouponResponse {
             );
         }
     }
+
+    /**
+     * 레디스 쿠폰 발급 요청
+     */
+    public record IssueRequestResponse(
+            String message
+    ) {
+        public static IssueRequestResponse toResponse(CouponResult.IssueRequestResult result) {
+            return new IssueRequestResponse(result.message());
+        }
+    }
 }

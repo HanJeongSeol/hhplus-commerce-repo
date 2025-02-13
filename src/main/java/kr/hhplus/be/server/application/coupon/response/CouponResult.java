@@ -47,4 +47,15 @@ public class CouponResult {
             );
         }
     }
+
+    /**
+     * 비동기 쿠폰 발급 요청 결과
+     */
+    public record IssueRequestResult(
+            String message
+    ) {
+        public static IssueRequestResult of(String message) {
+            return new IssueRequestResult(message);
+        }
+    }
 }

@@ -6,6 +6,7 @@ import kr.hhplus.be.server.application.coupon.response.CouponResult;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.coupon.dto.CouponInfo;
 import kr.hhplus.be.server.domain.user.UserService;
+import kr.hhplus.be.server.support.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,20 @@ public class CouponFacade {
         return userCouponList.stream()
                 .map(CouponResult.UserCouponResult::from)
                 .toList();
+    }
+
+    /**
+     * Redis를 사용한 비동기 쿠폰 발급 요청
+     */
+    public CouponResult.IssueRequestResult requestCouponIssue(CouponCommand.IssueCoupon command) {
+        userService.getUserById(command.userId());
+
+        try {
+            couponService.requestCouponIssue(command.userId(), command.couponId());
+            return CouponResult.IssueRequestResult.of("쿠폰 발급이 요청되었습니다.");
+        } catch (BusinessException e) {
+            return CouponResult.IssueRequestResult.of(e.getMessage());
+        }
     }
 
 }
