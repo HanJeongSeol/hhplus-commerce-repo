@@ -9,6 +9,8 @@ import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.domain.payment.dto.PaymentInfo;
 import kr.hhplus.be.server.domain.point.PointService;
 import kr.hhplus.be.server.domain.product.ProductService;
+import kr.hhplus.be.server.infra.platform.CompletedEvent;
+import kr.hhplus.be.server.infra.platform.publisher.PaymentEventPublisher;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.OrderStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
@@ -26,6 +28,7 @@ public class PaymentFacade {
     private final PointService pointService;
     private final ProductService productService;
     private final CouponService couponService;
+    private final PaymentEventPublisher paymentEventPublisher;
 
     @Transactional
     public PaymentResult.PaymentProcessResult processPayment(PaymentCommand.ProcessPayment command) {
@@ -79,13 +82,31 @@ public class PaymentFacade {
                 LocalDateTime.now()
         ) : null;
 
-        return PaymentResult.PaymentProcessResult.of(
+        /**
+         * ===============
+         * 데이터 플랫폼 전송
+         * ===============
+         */
+
+        // 11. 결과 생성
+        PaymentResult.PaymentProcessResult result =  PaymentResult.PaymentProcessResult.of(
                 approvedPayment,
                 order.getTotalPrice(),
                 discountInfo,
                 payment.getPaymentPrice(),
                 point.getBalance()
         );
+
+        // 12. 결제 완료 이벤트 발생
+        paymentEventPublisher.publishPaymentCompleted((
+                CompletedEvent.PaymentCompletedEvent.of(
+                        approvedPayment,
+                        order.getTotalPrice(),
+                        discountInfo
+                )
+        ));
+
+        return result;
 
     }
 }
