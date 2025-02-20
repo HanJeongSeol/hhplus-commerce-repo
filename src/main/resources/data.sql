@@ -28,7 +28,7 @@ VALUES
 -- 4-1. Order
 INSERT INTO order_main (order_id, user_id, total_price, status, created_at, updated_at)
 VALUES
-    (1, 1, 35000, 'COMPLETED', NOW(), NOW()),
+    (1, 1, 35000, 'PENDING', NOW(), NOW()),
     (2, 2, 28000, 'COMPLETED', NOW(), NOW()),
     (3, 1, 53000, 'COMPLETED', NOW(), NOW()),
     (4, 2, 25000, 'COMPLETED', NOW(), NOW()),
