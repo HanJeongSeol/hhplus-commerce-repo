@@ -1,6 +1,9 @@
 package kr.hhplus.be.server.domain.payment;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.hhplus.be.server.application.payment.response.PaymentResult;
 import kr.hhplus.be.server.domain.payment.dto.PaymentInfo;
+import kr.hhplus.be.server.infra.platform.CompletedEvent;
 import kr.hhplus.be.server.support.constant.ErrorCode;
 import kr.hhplus.be.server.support.constant.PaymentStatus;
 import kr.hhplus.be.server.support.exception.BusinessException;
@@ -16,7 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
-
+    private final PaymentOutboxEventRepository paymentOutboxEventRepository;
+    private final ObjectMapper objectMapper;
     /**
      * 결제 생성
      */
@@ -71,5 +75,17 @@ public class PaymentService {
      */
     public Page<Payment> getUserPayments(Long userId, Pageable pageable) {
         return paymentRepository.findByUserId(userId, pageable);
+    }
+
+    public PaymentOutboxEvent createPaymentOutbox(PaymentResult.PaymentProcessResult event) {
+        try {
+            String payload = objectMapper.writeValueAsString(event);
+            PaymentOutboxEvent paymentOutbox = PaymentOutboxEvent.create("PaymentCompletedEvent", payload);
+            paymentOutboxEventRepository.save(paymentOutbox);
+            return paymentOutbox;
+        } catch (Exception e) {
+            throw new RuntimeException("PaymentCompletedEvent 직렬화 실패", e);
+        }
+
     }
 }

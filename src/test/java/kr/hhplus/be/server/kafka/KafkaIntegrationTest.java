@@ -1,16 +1,14 @@
 package kr.hhplus.be.server.kafka;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.infra.kafka.payment.PaymentKafkaProducer;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
@@ -31,33 +29,20 @@ public class KafkaIntegrationTest {
      * Consumer는 test-topic을 구독하여 메시지 수신 여부를 확인
      *  -> 중간에 오류 발생했던 부분 확인 필요
      */
-    private KafkaConsumer<String, String> createConsumer() {
+    private KafkaConsumer<String, String> createConsumer(String topic) {
         Properties props = new Properties();
         props.put("bootstrap.servers", "localhost:19092,localhost:19093,localhost:19094");
-        props.put("group.id", "integration-test-group");
-        props.put("enable.auto.commit", "true");
+        props.put("group.id", "integration-test-group-" + System.currentTimeMillis());  // 새로운 그룹 ID 생성
+        props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        // 테스트 시점 이전의 모든 메시지를 읽기 위해 earliest 사용
         props.put("auto.offset.reset", "earliest");
-        return new KafkaConsumer<>(props);
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        consumer.subscribe(Collections.singletonList(topic));
+        return consumer;
     }
 
-    /**
-     * @TestConfiguration 내부에서 KafkaAdmin으로 test-topic을 자동 생성
-     */
-    @TestConfiguration
-    static class KafkaTestConfig {
-        @Bean
-        public NewTopic testTopic() {
-            // 토픽 생성 시 파티션과 복제 개수는 클러스터 상황에 맞게 조정합니다.
-            return TopicBuilder.name("test-topic")
-                    .partitions(3)
-                    .replicas(1)
-                    .build();
-        }
-    }
 
     @Test
     public void 직접_생성한_KafkaConsumer로_메시지가_test_topic에_등록되었는지_확인() {
@@ -65,11 +50,10 @@ public class KafkaIntegrationTest {
         String message = "Test Kafka Message";
 
         // KafkaConsumer 생성 및 구독
-        KafkaConsumer<String, String> consumer = createConsumer();
-        consumer.subscribe(Collections.singletonList(topic));
+        KafkaConsumer<String, String> consumer = createConsumer(topic);
 
         // PaymentKafkaProducer를 이용해 실제 메시지 발행
-        producer.sendMessage(topic, message);
+        producer.sendMessage(topic,"1", message);
 
         boolean messageFound = false;
         long timeout = System.currentTimeMillis() + 10000; // 최대 10초 대기

@@ -5,6 +5,7 @@ import kr.hhplus.be.server.application.payment.response.PaymentResult;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.payment.Payment;
+import kr.hhplus.be.server.domain.payment.PaymentOutboxEvent;
 import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.domain.payment.dto.PaymentInfo;
 import kr.hhplus.be.server.domain.point.PointService;
@@ -97,7 +98,10 @@ public class PaymentFacade {
                 point.getBalance()
         );
 
-        // 12. 결제 완료 이벤트 발생
+        // Kafka Message 전송을 위한 ouetboxEvent 데이터 생성
+        PaymentOutboxEvent outboxEvent = paymentService.createPaymentOutbox(result);
+
+        // 12. 결제 완료 이벤트 발생 -> Spring Event
         paymentEventPublisher.publishPaymentCompleted((
                 CompletedEvent.PaymentCompletedEvent.of(
                         approvedPayment,
