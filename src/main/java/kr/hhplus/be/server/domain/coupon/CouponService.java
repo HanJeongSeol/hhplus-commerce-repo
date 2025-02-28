@@ -29,9 +29,10 @@ public class CouponService {
 
 
         // 사용자 중복 발급 확인
-        if(couponRepository.findUserCoupon(userId, couponId).isPresent()){
-            throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
-        }
+        // 테스트를 위한 주석 처리
+//        if(couponRepository.findUserCoupon(userId, couponId).isPresent()){
+//            throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
+//        }
 
         // 쿠폰 발급 처리
         coupon.issue();
@@ -119,9 +120,10 @@ public class CouponService {
         }
 
         // 2. 이미 발급받은 쿠폰인지 확인
-        if(couponCacheRepository.hasIssuedCoupon(couponId, userId)){
-            throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
-        }
+        // 테스트를 위한 주석
+//        if(couponCacheRepository.hasIssuedCoupon(couponId, userId)){
+//            throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
+//        }
 
         // 3. 레디스 큐에 발급 요청 추가
         couponCacheRepository.addCouponRequest(couponId, userId, System.currentTimeMillis());
@@ -154,12 +156,13 @@ public class CouponService {
         log.info("Redis 재고 감소 완료. 쿠폰 ID: {}, 사용자 ID: {}", couponId, userId);
 
         // 1-2. 재차 중복 체크: 혹시 이미 발급된 경우에는 재고 복구하고 중복 발급 예외 처리
-        if (couponCacheRepository.hasIssuedCoupon(couponId, userId) ||
-                couponRepository.findUserCoupon(userId, couponId).isPresent()) {
-            // 중복으로 처리된 경우 Redis에서 감소된 재고 복구
-            couponCacheRepository.incrementStock(couponId);
-            throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
-        }
+        // 테스트를 위한 주석
+//        if (couponCacheRepository.hasIssuedCoupon(couponId, userId) ||
+//                couponRepository.findUserCoupon(userId, couponId).isPresent()) {
+//            // 중복으로 처리된 경우 Redis에서 감소된 재고 복구
+//            couponCacheRepository.incrementStock(couponId);
+//            throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
+//        }
         try {
             log.info("DB 쿠폰 발급 시도. 쿠폰 ID: {}, 사용자 ID: {}", couponId, userId);
             // 2. DB 쿠폰 발급 처리

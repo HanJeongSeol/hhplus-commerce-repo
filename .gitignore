@@ -41,3 +41,6 @@ data
 ### Log files ###
 *.log
 logs/
+
+k6/
+run-load-test.sh

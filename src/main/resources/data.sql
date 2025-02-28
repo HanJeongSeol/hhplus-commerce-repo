@@ -58,6 +58,6 @@ VALUES
 -- 5. Coupon
 INSERT INTO coupon (coupon_id, name, discount_price, stock, expired_at, created_at, updated_at)
 VALUES
-    (1, '신규가입 할인 쿠폰', 5000, 10, DATE_ADD(NOW(), INTERVAL 30 DAY), NOW(), NOW()),
+    (1, '신규가입 할인 쿠폰', 1, 9999999, DATE_ADD(NOW(), INTERVAL 30 DAY), NOW(), NOW()),
     (2, '여름 시즌 할인 쿠폰', 3000, 20, DATE_ADD(NOW(), INTERVAL 7 DAY), NOW(), NOW()),
     (3, '품절 임박 할인 쿠폰', 2000, 30, DATE_ADD(NOW(), INTERVAL 3 DAY), NOW(), NOW());
